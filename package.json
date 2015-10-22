@@ -8,8 +8,8 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "mocha $(find ./tests -name *.tests.js) --opts=mocha.opts",
-    "test-watch": "mocha $(find ./tests -name *.tests.js) --opts=mocha.opts --watch"
+    "test": "mocha $(find ./tests -name *.tests.js) --opts mocha.opts",
+    "test-watch": "mocha $(find ./tests -name *.tests.js) --opts mocha.opts --watch"
   },
   "repository": {
     "type": "git",
