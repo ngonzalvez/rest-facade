@@ -2,7 +2,14 @@
 Node.js module that abstracts the process of consuming a REST endpoint.
 
 
-## Create a new endpoint client
+## Installation
+
+    npm install rest-orm
+
+
+## Usage
+
+### Create a new endpoint client
 
 ```
 var rest = require('rest-orm');
@@ -10,20 +17,20 @@ var Users = new rest.Client('http://domain.com/users/:id');
 ```
 
 
-## Get all instances from the API
+### Get all instances from the API
 
-```
+---js
 Users
   .getAll()
   .then(function (users) {
     console.log(users.length, 'users retrieved');
   });
-```
+---
 
 
-## Create a new instance and save it to the API
+### Create a new instance and save it to the API
 
-```
+---js
 var user = Users.create({ firstName: 'John', lastName: 'Doe' });
 
 user
@@ -31,26 +38,26 @@ user
   .then(function (user) {
     console.log('User created');
   });
-```
+---
 
 
-## Delete an instance from the API by ID
+### Delete an instance from the API by ID
 
-```
+---js
 Users
   .delete({ id: 1 })
   .then(function () {
     console.log('User deleted');
   });
-```
+---
 
 
-## Update an instance.
+### Update an instance.
 
-```
+---js
 Users
   .update(userId, data)
   .then(function () {
     console.log('User updated');
   });
-```
+---
