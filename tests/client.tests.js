@@ -12,25 +12,27 @@ module.exports = {
   'Client': {
     '#constructor': {
       'should require a URL as first parameter': function () {
-        expect(Client ).to.throw(ArgumentError);
+        expect(Client).to.throw(ArgumentError);
       },
 
       'should not error when a valid URL is provided': function () {
-        expect(Client ).to.throw(ArgumentError);
+        var client = Client.bind(null, 'http://domain.com/endpoint');
+
+        expect(client).to.not.throw(ArgumentError);
       }
     },
 
     '#getAll': {
       before: function () {
         this.domain = 'http://domain.com';
-        this.endpoint = 'endpoint';
-
-        // Mock the REST resource endpoint.
-        this.nock = nock(this.domain).get('/' + this.endpoint).reply(200, []);
+        this.endpoint = '/endpoint';
       },
 
       beforeEach: function () {
-        this.client = new Client (this.domain, this.endpoint);
+        // Mock the REST resource endpoint.
+        this.nock = nock(this.domain).get(this.endpoint).reply(200, []);
+
+        this.client = new Client (this.domain + this.endpoint);
       },
 
       'should be defined': function () {
@@ -46,7 +48,7 @@ module.exports = {
 
       'should accept a callback': function (done) {
         this.client.getAll(function (err, clients) {
-          expect(clients).to.be.an.instanceOf(Array);
+          if (err) return done(err);
           done();
         });
       },
@@ -61,18 +63,16 @@ module.exports = {
           request = http.request.args[0];
 
           expect(request.domain).to.equal(this.domain);
-          expect(request.path).to.equal('/' + this.endpoint);
+          expect(request.path).to.equal(this.endpoint);
         });
       },
 
       'should pass the error to the rejected promise': function (done) {
-        this.nock = nock(this.domain).get('/' + this.endpoint).reply(500);
+        nock.cleanAll();
+        this.nock = nock(this.domain).get(this.endpoint).replyWithError('Internal error');
 
         this.client
           .getAll()
-          .then(function (clients) {
-            done(new Error('Shouldn\'t resolve when there is an Error response'));
-          })
           .catch(function (err) {
             expect(err).to.exist;
             expect(err).to.be.an.instanceOf(Error);
