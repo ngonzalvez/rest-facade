@@ -57,7 +57,7 @@ Users
 
 ~~~js
 Users
-  .update(userId, data)
+  .update({ id: 1 }, data)
   .then(function () {
     console.log('User updated');
   });
