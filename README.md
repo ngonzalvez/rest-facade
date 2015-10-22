@@ -1,4 +1,5 @@
-# rest-orm
+# rest-orm [![Build Status](https://travis-ci.org/ngonzalvez/rest-orm.svg?branch=master)](https://travis-ci.org/ngonzalvez/rest-orm)
+
 Node.js module that abstracts the process of consuming a REST endpoint.
 
 
