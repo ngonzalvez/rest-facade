@@ -4,19 +4,19 @@ var nock = require('nock');
 var http = require('http');
 var Promise = require('bluebird');
 
-var Model  = require('../src/model');
+var Client  = require('../src/Client');
 var ArgumentError = require('../src/exceptions').ArgumentError;
 
 
 module.exports = {
-  'Model': {
+  'Client': {
     '#constructor': {
       'should require a URL as first parameter': function () {
-        expect(Model ).to.throw(ArgumentError);
+        expect(Client ).to.throw(ArgumentError);
       },
 
       'should not error when a valid URL is provided': function () {
-        expect(Model ).to.throw(ArgumentError);
+        expect(Client ).to.throw(ArgumentError);
       }
     },
 
@@ -30,7 +30,7 @@ module.exports = {
       },
 
       beforeEach: function () {
-        this.client = new Model (this.domain, this.endpoint);
+        this.client = new Client (this.domain, this.endpoint);
       },
 
       'should be defined': function () {
