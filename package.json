@@ -1,0 +1,36 @@
+{
+  "name": "rest-orm",
+  "version": "0.1.0",
+  "description": "Simple ORM-like abstraction for REST API endpoints",
+  "main": "src/index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "mocha $(find ./tests -name *.tests.js) --opts=mocha.opts",
+    "test-watch": "mocha $(find ./tests -name *.tests.js) --opts=mocha.opts --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ngonzalvez/rest-orm.git"
+  },
+  "keywords": [
+    "orm",
+    "rest",
+    "api"
+  ],
+  "author": "Nicolás Gonzálvez",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ngonzalvez/rest-orm/issues"
+  },
+  "homepage": "https://github.com/ngonzalvez/rest-orm#readme",
+  "devDependencies": {
+    "bluebird": "^2.10.2",
+    "chai": "^3.4.0",
+    "mocha": "^2.3.3",
+    "nock": "^2.15.0",
+    "sinon": "^1.17.2"
+  }
+}
