@@ -107,6 +107,90 @@ module.exports = {
               done();
             });
         }
+    },
+
+    '#get': {
+      beforeEach:
+        function () {
+          this.data = { name: 'Test' };
+          this.successReq = nock(domain).get(endpoint + '/OK').reply(200, this.data);
+          this.errorReq = nock(domain).get(endpoint + '/FAIL').replyWithError();
+        },
+
+      afterEach:
+        function () {
+          nock.cleanAll();
+        },
+
+      'should be defined':
+        function () {
+          expect(this.client.get).to.exist;
+          expect(this.client.get).to.be.an.instanceOf(Function);
+        },
+
+      'should accept a callback':
+        function (done) {
+          this.client.get('OK', done.bind(null, null));
+        },
+
+      'should return a promise when no callback is given':
+        function (done) {
+          var promise = this.client
+            .get('OK')
+            .then(done.bind(null, null))
+            .catch(done);
+
+          expect(promise).to.be.an.instanceOf(Promise);
+        },
+
+      'should perform a GET /endpoint/:id request':
+        function (done) {
+          var req = this.successReq;
+
+          this.client.get('OK', function (err) {
+            if (err) return done(err);
+
+            expect(req.isDone()).to.be.true;
+            done();
+          });
+        },
+
+        'should pass the response body to the callback':
+          function (done) {
+            var actual = null;
+            var expected = JSON.stringify(this.data);
+
+            this.client.get('OK', function (err, response) {
+              if (err) return done(err);
+
+              actual = JSON.stringify(response);
+
+              expect(actual).to.equal(expected);
+              done();
+            });
+          },
+
+        'should pass the response body to the promise':
+          function (done) {
+            var expected = JSON.stringify(this.data);
+
+            this.client
+              .get('OK')
+              .then(function (res) {
+                var response = JSON.stringify(res);
+
+                expect(response).to.equal(expected);
+                done();
+              })
+              .catch(done);
+          },
+
+        'should pass the errors to the callback':
+          function (done) {
+            var req = this.errorReq;
+
+            done();
+          }
     }
   }
 };

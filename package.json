@@ -32,5 +32,8 @@
     "mocha": "^2.3.3",
     "nock": "^2.15.0",
     "sinon": "^1.17.2"
+  },
+  "dependencies": {
+    "superagent": "^1.4.0"
   }
 }
