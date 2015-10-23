@@ -1,11 +1,16 @@
-# rest-orm [IN DEVELOPMENT] [PRE-ALPHA] [![Build Status](https://travis-ci.org/ngonzalvez/rest-orm.svg?branch=master)](https://travis-ci.org/ngonzalvez/rest-orm)
+# rest-orm [IN DEVELOPMENT] [ALPHA] [![Build Status](https://travis-ci.org/ngonzalvez/rest-orm.svg?branch=master)](https://travis-ci.org/ngonzalvez/rest-orm)
 
 Node.js module that abstracts the process of consuming a REST endpoint.
 
 
 ## Installation
 
-    npm install rest-orm
+    npm install rest-orm@0.1.0-alpha
+
+
+## IMPORTANT
+
+At the moment just the getAll() and get() methods are implemented.
 
 
 ## Usage
