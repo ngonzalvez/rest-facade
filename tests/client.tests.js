@@ -1,3 +1,5 @@
+var extend = require('util')._extend;
+
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var nock = require('nock');
@@ -24,7 +26,7 @@ module.exports = {
           expect(Client).to.throw(ArgumentError);
         },
 
-      'should not error when a valid URL is provided':
+      'should not throw when a valid URL is provided':
         function () {
           var client = Client.bind(null, 'http://domain.com/endpoint');
 
@@ -46,8 +48,10 @@ module.exports = {
 
       'should be defined':
         function () {
-          expect(this.client.getAll).to.exist;
-          expect(this.client.getAll).to.be.a('Function');
+          var getAll = this.client.getAll.bind(this.client);
+
+          expect(getAll).to.exist;
+          expect(getAll).to.be.a('Function');
         },
 
       'should return a promise':
@@ -191,6 +195,195 @@ module.exports = {
 
             done();
           }
+    },
+
+    '#create': {
+      beforeEach:
+        function () {
+          this.resource = {
+            name: 'Test coso'
+          };
+
+          // Mock the REST resource endpoint.
+          this.nock = nock(domain).post(endpoint).reply(201, this.resource);
+        },
+
+      afterEach:
+        function () {
+          nock.cleanAll();
+        },
+
+      'should be defined':
+        function () {
+          expect(this.client.create).to.exist;
+        },
+
+      'should require a data object as first argument':
+        function () {
+          expect(this.client.create).to.throw(ArgumentError, 'Missing data object');
+        },
+
+      'should allow a callback as second argument':
+        function (done) {
+          var data = {
+            name: 'Test resource'
+          };
+
+          this.client.create(data, function () {
+            done();
+          });
+        },
+
+      'should return a promise when no callback is provided':
+        function () {
+          var returnValue = this.client.create({ name: 'test' });
+
+          expect(returnValue).to.be.an.instanceOf(Promise);
+        },
+
+      'should perform a POST /endpoint request':
+        function (done) {
+          var expectedName = this.resource.name;
+          var request = this.nock;
+
+          this.client
+            .create(this.resource)
+            .then(function (data) {
+              expect(data).to.be.an.instanceOf(Object);
+              expect(data.name).to.equal(expectedName);
+              expect(request.isDone()).to.be.true;
+              done();
+            })
+            .catch(done);
+        },
+
+      'should pass any errors to the callback function':
+        function (done) {
+          nock.cleanAll();
+          this.nock = nock(domain).post(endpoint).replyWithError();
+
+          this.client.create(this.resource, function (err) {
+            expect(err).to.exist;
+            done();
+          });
+        },
+
+      'should pass errors to the rejected promise':
+        function (done) {
+          nock.cleanAll();
+          this.nock = nock(domain).post(endpoint).reply(500);
+
+          this.client
+            .create(this.resource)
+            .catch(function (err) {
+              expect(err).to.exist;
+              done();
+            });
+        }
+    },
+
+    '#update': {
+
+      beforeEach:
+        function () {
+          this.id = 1;
+          this.data = { name: 'Updated' };
+          this.updatedData = extend({ id: this.id }, this.data);
+
+          this.nock = nock(domain)
+            .post(endpoint + '/' + this.id)
+            .reply(200, this.updatedData);
+        },
+
+      afterEach:
+        function () {
+          nock.cleanAll();
+        },
+
+      'should be defined':
+        function () {
+          expect(this.client.update).to.exist;
+        },
+
+      'should accept a callback':
+        function (done) {
+          this.client.update(1, {}, function () {
+            done();
+          });
+        },
+
+      'should require an ID as first argument':
+        function () {
+          var updateWithoutArgs = this.client.update.bind(this.client);
+
+          expect(updateWithoutArgs).to.throw(ArgumentError, 'A resource ID is required');
+        },
+
+      'should require an object as second argument':
+        function () {
+          var updateWithoutData = this.client.update.bind(this.client, this.id);
+
+          expect(updateWithoutData).to.throw(ArgumentError, 'The data must be an object');
+        },
+
+      'should perform a POST /endpoint/:id':
+        function (done) {
+          var request = this.nock;
+
+          this.client
+            .update(this.id, this.data)
+            .then(function () {
+              expect(request.isDone()).to.be.true;
+              done();
+            })
+            .catch(done);
+        },
+
+      'should pass the body of the response to the resolved promise':
+        function (done) {
+          var expectedData = JSON.stringify(this.updatedData);
+
+          this.client
+            .update(this.id, this.data)
+            .then(function (data) {
+              expect(JSON.stringify(data)).to.equal(expectedData);
+              done();
+            })
+        },
+
+      'should pass the body of the response to the callback':
+        function (done) {
+          var expectedData = JSON.stringify(this.updatedData);
+
+          this.client.update(this.id, this.data, function (err, data) {
+            expect(JSON.stringify(data)).to.equal(expectedData);
+            done();
+          });
+        },
+
+      'should pass any errors to the rejected promise':
+        function (done) {
+          nock.cleanAll();
+          this.nock = nock(domain).post(endpoint + '/' + this.id).reply(500);
+
+          this.client
+            .update(this.id, this.data)
+            .catch(function (err) {
+              expect(err).to.exist;
+              done();
+            });
+        },
+
+      'should pass any errors to the callback function':
+        function (done) {
+          nock.cleanAll();
+          this.nock = nock(domain).post(endpoint + '/' + this.id).reply(500);
+
+          this.client.update(this.id, this.data, function (err) {
+            expect(err).to.exist;
+            done();
+          });
+        }
     }
   }
 };

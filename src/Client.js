@@ -42,41 +42,90 @@ Client.prototype.getAll = function (callback) {
  * @param   {Function}  [callback]  A callback to be called
  */
 Client.prototype.get = function (id, callback) {
-  var url = this.getURL(id);
+  var options = {
+    url: this.getURL(id),
+    method: 'GET'
+  };
 
-  return this.request(url, 'GET', callback);
+  return this.request(options, callback);
+};
+
+/**
+ * Send a request to create a new resource.
+ *
+ * @param   {Object}    data    The data for the new resource.
+ * @return  {Promise}           Resolves to the just created object.
+ */
+Client.prototype.create = function (data, callback) {
+  if (typeof data !== 'object') {
+    throw new ArgumentError('Missing data object');
+  }
+
+  var options = {
+    url : this.getURL(),
+    method: 'POST',
+    data: data
+  };
+
+  return this.request(options, callback);
+};
+
+/**
+ * Update an existing resource by its ID.
+ *
+ * @param   {Number}    id          The ID of the resource to be updated.
+ * @param   {Object}    data        The new data.
+ * @param   {Function}  [callback]  Callback function.
+ * @return  {Promise}               Resolves to the updated resource.
+ */
+Client.prototype.update = function (id, data, callback) {
+  if (id === null || id === undefined) {
+    throw new ArgumentError('A resource ID is required');
+  }
+
+  if (typeof data !== 'object') {
+    throw new ArgumentError('The data must be an object');
+  }
+
+  var options = {
+    method: 'POST',
+    url: this.getURL(id),
+    data: data
+  };
+
+  return this.request(options, callback);
 };
 
 /**
  * Perform a request of the givne method, to the given URL.
  *
  * @method
- * @param   {String}    url         The URL to be requested.
- * @param   {String}    method      The type of request to be done.
+ * @param   {Object}    options             Request options object.
+ * @param   {String}    options.url         The URL to be requested.
+ * @param   {String}    options.method      The type of request to be done.
  * @param   {Function}  [callback]  Callback function.
  * @return  {Promise}               Resolves to response body.
  */
-Client.prototype.request = function (url, method, callback) {
+Client.prototype.request = function (options, callback) {
   var promise = new Promise(function (resolve, reject) {
-    method = method.toLowerCase();
+    var method = options.method.toLowerCase();
 
-    request[method](url)
+    request[method](options.url)
       .set('Accept', 'application/json')
       .end(function (err, res) {
-        if (err) return reject(err);
-
-        resolve(res.body);
+        return err ? reject(err) : resolve(res.body);
       });
   });
 
   if (!callback) return promise;
 
-
   promise
     .then(function (response) {
       callback(null, response);
     })
-    .catch(callback);
+    .catch(function (err) {
+      callback(err);
+    });
 };
 
 /**
@@ -93,7 +142,7 @@ Client.prototype.getURL = function (id) {
   }
 
   return url;
-}
+};
 
 
 module.exports = Client;
