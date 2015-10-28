@@ -1,4 +1,4 @@
-# rest-orm [IN DEVELOPMENT] [ALPHA] [![Build Status](https://travis-ci.org/ngonzalvez/rest-orm.svg?branch=master)](https://travis-ci.org/ngonzalvez/rest-orm)
+# rest-orm [![Build Status](https://travis-ci.org/ngonzalvez/rest-orm.svg?branch=master)](https://travis-ci.org/ngonzalvez/rest-orm)
 
 Node.js module that abstracts the process of consuming a REST endpoint.
 
@@ -6,11 +6,6 @@ Node.js module that abstracts the process of consuming a REST endpoint.
 ## Installation
 
     npm install rest-orm@0.1.0-alpha
-
-
-## IMPORTANT
-
-At the moment just the getAll() and get() methods are implemented.
 
 
 ## Usage
@@ -37,10 +32,8 @@ Users
 ### Create a new instance and save it to the API
 
 ~~~js
-var user = Users.create({ firstName: 'John', lastName: 'Doe' });
-
-user
-  .save
+Users
+  .create({ firstName: 'John', lastName: 'Doe' });
   .then(function (user) {
     console.log('User created');
   });
@@ -51,7 +44,7 @@ user
 
 ~~~js
 Users
-  .delete({ id: 1 })
+  .delete(userId)
   .then(function () {
     console.log('User deleted');
   });
@@ -62,8 +55,18 @@ Users
 
 ~~~js
 Users
-  .update({ id: 1 }, data)
+  .update(userId, data)
   .then(function () {
     console.log('User updated');
   });
+~~~
+
+### Callbacks
+
+All methods support callbacks. However, if a callback function is given no promise will be returned. E.g.:
+
+~~~js
+Users.getAll(function (users) {
+
+});
 ~~~
