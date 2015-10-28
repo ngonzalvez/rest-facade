@@ -5,7 +5,7 @@ Node.js module that abstracts the process of consuming a REST endpoint.
 
 ## Installation
 
-    npm install rest-orm@0.1.0-alpha
+    npm install rest-orm@0.2.1
 
 
 ## Usage
@@ -14,7 +14,7 @@ Node.js module that abstracts the process of consuming a REST endpoint.
 
 ~~~js
 var rest = require('rest-orm');
-var Users = new rest.Client('http://domain.com/users/:id');
+var Users = new rest.Client('http://domain.com/users');
 ~~~
 
 

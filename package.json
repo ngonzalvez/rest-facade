@@ -1,6 +1,6 @@
 {
   "name": "rest-orm",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Simple ORM-like abstraction for REST API endpoints",
   "main": "src/index.js",
   "directories": {
