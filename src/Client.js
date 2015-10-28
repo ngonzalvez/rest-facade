@@ -131,6 +131,7 @@ Client.prototype.request = function (options, callback) {
     var method = options.method.toLowerCase();
 
     request[method](options.url)
+      .send(options.data)
       .set('Accept', 'application/json')
       .end(function (err, res) {
         return err ? reject(err) : resolve(res.body);
