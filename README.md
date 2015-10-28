@@ -5,7 +5,7 @@ Node.js module that abstracts the process of consuming a REST endpoint.
 
 ## Installation
 
-    npm install rest-orm@0.2.1
+    npm install rest-orm
 
 
 ## Usage
@@ -66,7 +66,7 @@ Users
 All methods support callbacks. However, if a callback function is given no promise will be returned. E.g.:
 
 ~~~js
-Users.getAll(function (users) {
+Users.getAll(function (err, users) {
 
 });
 ~~~
