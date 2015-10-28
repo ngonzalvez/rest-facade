@@ -14,11 +14,12 @@ var ArgumentError = require('./exceptions').ArgumentError;
  *
  * @param {String} resourceUrl  The URL for the REST ednpoint.
  */
-var Client = function (resourceUrl) {
+var Client = function (resourceUrl, options) {
   if (!resourceUrl) {
     throw new ArgumentError('Missing REST endpoint URL')
   }
 
+  this.options = options;
   this.url = url.parse(resourceUrl);
 };
 
@@ -127,11 +128,19 @@ Client.prototype.delete = function (id, callback) {
  * @return  {Promise}               Resolves to response body.
  */
 Client.prototype.request = function (options, callback) {
+  var headers = this.options.headers;
+
   var promise = new Promise(function (resolve, reject) {
     var method = options.method.toLowerCase();
 
-    request[method](options.url)
-      .send(options.data)
+
+    var req = request[method](options.url).send(options.data);
+
+    for (var header in headers) {
+      req = req.set(header, headers[header]);
+    }
+
+    req
       .set('Accept', 'application/json')
       .end(function (err, res) {
         return err ? reject(err) : resolve(res.body);
