@@ -97,6 +97,26 @@ Client.prototype.update = function (id, data, callback) {
 };
 
 /**
+ * Delete a resource by its ID.
+ *
+ * @param   {Number}    id          The ID of the resource.
+ * @param   {Function}  [callback]  Callback function.
+ * @return  {Promise}               Deletion promise.
+ */
+Client.prototype.delete = function (id, callback) {
+  if (id === null || id === undefined) {
+    throw new ArgumentError('The resource ID cannot be null or undefined');
+  }
+
+  var options = {
+    method: 'DEL',
+    url: this.getURL(id)
+  };
+
+  return this.request(options, callback);
+};
+
+/**
  * Perform a request of the givne method, to the given URL.
  *
  * @method

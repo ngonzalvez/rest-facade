@@ -45,8 +45,7 @@ module.exports = {
         function () {
           nock.cleanAll();
         },
-
-      'should be defined':
+'should be defined':
         function () {
           var getAll = this.client.getAll.bind(this.client);
 
@@ -216,6 +215,7 @@ module.exports = {
       'should be defined':
         function () {
           expect(this.client.create).to.exist;
+          expect(this.client.create).to.be.an.instanceOf(Function);
         },
 
       'should require a data object as first argument':
@@ -283,7 +283,6 @@ module.exports = {
     },
 
     '#update': {
-
       beforeEach:
         function () {
           this.id = 1;
@@ -380,6 +379,68 @@ module.exports = {
           this.nock = nock(domain).post(endpoint + '/' + this.id).reply(500);
 
           this.client.update(this.id, this.data, function (err) {
+            expect(err).to.exist;
+            done();
+          });
+        }
+    },
+
+    '#delete': {
+      beforeEach:
+        function () {
+          this.id = 1;
+          this.nock = nock(domain).delete(endpoint + '/' + this.id).reply(200);
+        },
+
+      afterEach:
+        function () {
+          nock.cleanAll();
+        },
+
+      'should be defined':
+        function () {
+          expect(this.client.delete).to.exist;
+          expect(this.client.delete).to.be.an.instanceOf(Function);
+        },
+
+      'should require an id as first argument':
+        function () {
+          var deleteFunc = this.client.delete.bind(this.client);
+
+          expect(deleteFunc).to.throw;
+        },
+
+      'should accept a callback':
+        function (done) {
+          this.client.delete(1, function () {
+            done();
+          });
+        },
+
+      'should return a promise if no callback is given':
+        function () {
+          var returnValue = this.client.delete(1);
+
+          expect(returnValue).to.be.an.instanceOf(Promise);
+        },
+
+      'should pass any errors to the rejected promise':
+        function (done) {
+          nock.cleanAll();
+          var request = nock(domain).delete(endpoint + '/1').reply(500);
+
+          this.client.delete(1).catch(function (err) {
+            expect(err).to.exist;
+            done();
+          });
+        },
+
+      'should pass any errors to the callback function':
+        function (done) {
+          nock.cleanAll();
+          var request = nock(domain).delete(endpoint + '/1').reply(500);
+
+          this.client.delete(1, function (err) {
             expect(err).to.exist;
             done();
           });
