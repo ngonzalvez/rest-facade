@@ -15,7 +15,9 @@ Node.js module that abstracts the process of consuming a REST endpoint.
 ~~~js
 var rest = require('rest-orm');
 var options = {
-  Authorization: 'Bearer token'
+  headers: {
+    Authorization: 'Bearer token'
+  }
 };
 
 var Users = new rest.Client('http://domain.com/users', options);
