@@ -17,7 +17,7 @@ module.exports = {
   'Client': {
     beforeEach:
       function () {
-        this.client = new Client (domain + endpoint);
+        this.client = new Client (domain + endpoint + '/:id');
       },
 
     '#constructor': {
@@ -28,7 +28,7 @@ module.exports = {
 
       'should not throw when a valid URL is provided':
         function () {
-          var client = Client.bind(null, 'http://domain.com/endpoint');
+          var client = Client.bind(null, 'http://domain.com/endpoint/:id');
 
           expect(client).to.not.throw(ArgumentError);
         }
@@ -45,7 +45,8 @@ module.exports = {
         function () {
           nock.cleanAll();
         },
-'should be defined':
+
+      'should be defined':
         function () {
           var getAll = this.client.getAll.bind(this.client);
 
@@ -62,7 +63,7 @@ module.exports = {
 
       'should accept a callback':
         function (done) {
-          this.client.getAll(function (err, clients) {
+          this.client.getAll({}, function (err, clients) {
             if (err) return done(err);
             done();
           });
@@ -73,7 +74,7 @@ module.exports = {
           var request = null;
           var endpoint = this.nock;
 
-          this.client.getAll(function (err, clients) {
+          this.client.getAll({}, function (err, clients) {
             expect(err).to.not.exist;
             expect(endpoint.isDone()).to.be.true;
           });
@@ -133,13 +134,13 @@ module.exports = {
 
       'should accept a callback':
         function (done) {
-          this.client.get('OK', done.bind(null, null));
+          this.client.get({ id: 'OK' }, done.bind(null, null));
         },
 
       'should return a promise when no callback is given':
         function (done) {
           var promise = this.client
-            .get('OK')
+            .get({ id: 'OK' })
             .then(done.bind(null, null))
             .catch(done);
 
@@ -150,7 +151,7 @@ module.exports = {
         function (done) {
           var req = this.successReq;
 
-          this.client.get('OK', function (err) {
+          this.client.get({ id: 'OK' }, function (err) {
             if (err) return done(err);
 
             expect(req.isDone()).to.be.true;
@@ -163,7 +164,7 @@ module.exports = {
             var actual = null;
             var expected = JSON.stringify(this.data);
 
-            this.client.get('OK', function (err, response) {
+            this.client.get({ id: 'OK' }, function (err, response) {
               if (err) return done(err);
 
               actual = JSON.stringify(response);
@@ -178,7 +179,7 @@ module.exports = {
             var expected = JSON.stringify(this.data);
 
             this.client
-              .get('OK')
+              .get({ id: 'OK' })
               .then(function (res) {
                 var response = JSON.stringify(res);
 
@@ -306,7 +307,7 @@ module.exports = {
 
       'should accept a callback':
         function (done) {
-          this.client.update(1, {}, function () {
+          this.client.update({ id: 1 }, {}, function () {
             done();
           });
         },
@@ -320,7 +321,7 @@ module.exports = {
 
       'should require an object as second argument':
         function () {
-          var updateWithoutData = this.client.update.bind(this.client, this.id);
+          var updateWithoutData = this.client.update.bind(this.client, { id: this.id });
 
           expect(updateWithoutData).to.throw(ArgumentError, 'The data must be an object');
         },
@@ -330,7 +331,7 @@ module.exports = {
           var request = this.nock;
 
           this.client
-            .update(this.id, this.data)
+            .update({ id: this.id }, this.data)
             .then(function () {
               expect(request.isDone()).to.be.true;
               done();
@@ -343,7 +344,7 @@ module.exports = {
           var expectedData = JSON.stringify(this.updatedData);
 
           this.client
-            .update(this.id, this.data)
+            .update({ id: this.id }, this.data)
             .then(function (data) {
               expect(JSON.stringify(data)).to.equal(expectedData);
               done();
@@ -354,7 +355,7 @@ module.exports = {
         function (done) {
           var expectedData = JSON.stringify(this.updatedData);
 
-          this.client.update(this.id, this.data, function (err, data) {
+          this.client.update({ id: this.id }, this.data, function (err, data) {
             expect(JSON.stringify(data)).to.equal(expectedData);
             done();
           });
@@ -366,7 +367,7 @@ module.exports = {
           this.nock = nock(domain).post(endpoint + '/' + this.id).reply(500);
 
           this.client
-            .update(this.id, this.data)
+            .update({ id: this.id }, this.data)
             .catch(function (err) {
               expect(err).to.exist;
               done();
@@ -378,7 +379,7 @@ module.exports = {
           nock.cleanAll();
           this.nock = nock(domain).post(endpoint + '/' + this.id).reply(500);
 
-          this.client.update(this.id, this.data, function (err) {
+          this.client.update({ id: this.id }, this.data, function (err) {
             expect(err).to.exist;
             done();
           });
@@ -412,14 +413,14 @@ module.exports = {
 
       'should accept a callback':
         function (done) {
-          this.client.delete(1, function () {
+          this.client.delete({ id: 1 }, function () {
             done();
           });
         },
 
       'should return a promise if no callback is given':
         function () {
-          var returnValue = this.client.delete(1);
+          var returnValue = this.client.delete({ id: 1 });
 
           expect(returnValue).to.be.an.instanceOf(Promise);
         },
@@ -429,7 +430,7 @@ module.exports = {
           nock.cleanAll();
           var request = nock(domain).delete(endpoint + '/1').reply(500);
 
-          this.client.delete(1).catch(function (err) {
+          this.client.delete({ id: 1 }).catch(function (err) {
             expect(err).to.exist;
             done();
           });
@@ -440,7 +441,7 @@ module.exports = {
           nock.cleanAll();
           var request = nock(domain).delete(endpoint + '/1').reply(500);
 
-          this.client.delete(1, function (err) {
+          this.client.delete({ id: 1 }, function (err) {
             expect(err).to.exist;
             done();
           });

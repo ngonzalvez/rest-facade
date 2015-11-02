@@ -19,7 +19,7 @@ var Client = function (resourceUrl, options) {
     throw new ArgumentError('Missing REST endpoint URL')
   }
 
-  this.options = options;
+  this.options = options || {};
   this.url = url.parse(resourceUrl);
 };
 
@@ -31,8 +31,8 @@ var Client = function (resourceUrl, options) {
  * @param   {Function} [callback]   Callback to pass the response.
  * @return  {Promise}               Promise that resolve to a list.
  */
-Client.prototype.getAll = function (callback) {
-  return this.get(undefined, callback);
+Client.prototype.getAll = function (params, callback) {
+  return this.get(params, callback);
 };
 
 /**
@@ -42,13 +42,13 @@ Client.prototype.getAll = function (callback) {
  * @param   {Number}    id          The id of the resource to be requested.
  * @param   {Function}  [callback]  A callback to be called
  */
-Client.prototype.get = function (id, callback) {
+Client.prototype.get = function (params, callback) {
   var options = {
-    url: this.getURL(id),
+    url: this.getURL(params || {}),
     method: 'GET'
   };
 
-  return this.request(options, callback);
+  return this.request(options, params || {}, callback);
 };
 
 /**
@@ -63,24 +63,27 @@ Client.prototype.create = function (data, callback) {
   }
 
   var options = {
-    url : this.getURL(),
+    url : this.getURL(data),
     method: 'POST',
     data: data
   };
 
-  return this.request(options, callback);
+  return this.request(options, data, callback);
 };
 
 /**
  * Update an existing resource by its ID.
  *
- * @param   {Number}    id          The ID of the resource to be updated.
+ * @param   {Object}    params      Object containing URL resource params.
+ * @param   {Number}    params.id   The ID of the resource to be updated.
  * @param   {Object}    data        The new data.
  * @param   {Function}  [callback]  Callback function.
  * @return  {Promise}               Resolves to the updated resource.
  */
-Client.prototype.update = function (id, data, callback) {
-  if (id === null || id === undefined) {
+Client.prototype.update = function (params, data, callback) {
+  params = params || {};
+
+  if (params.id === null || params.id === undefined) {
     throw new ArgumentError('A resource ID is required');
   }
 
@@ -90,11 +93,11 @@ Client.prototype.update = function (id, data, callback) {
 
   var options = {
     method: 'POST',
-    url: this.getURL(id),
+    url: this.getURL(params),
     data: data
   };
 
-  return this.request(options, callback);
+  return this.request(options, params, callback);
 };
 
 /**
@@ -104,21 +107,23 @@ Client.prototype.update = function (id, data, callback) {
  * @param   {Function}  [callback]  Callback function.
  * @return  {Promise}               Deletion promise.
  */
-Client.prototype.delete = function (id, callback) {
-  if (id === null || id === undefined) {
+Client.prototype.delete = function (params, callback) {
+  params = params || {};
+
+  if (params.id === null || params.id === undefined) {
     throw new ArgumentError('The resource ID cannot be null or undefined');
   }
 
   var options = {
     method: 'DEL',
-    url: this.getURL(id)
+    url: this.getURL(params)
   };
 
-  return this.request(options, callback);
+  return this.request(options, params, callback);
 };
 
 /**
- * Perform a request of the givne method, to the given URL.
+ * Perform a request of the given method, to the given URL.
  *
  * @method
  * @param   {Object}    options             Request options object.
@@ -127,13 +132,11 @@ Client.prototype.delete = function (id, callback) {
  * @param   {Function}  [callback]  Callback function.
  * @return  {Promise}               Resolves to response body.
  */
-Client.prototype.request = function (options, callback) {
-  var headers = this.options.headers;
+Client.prototype.request = function (options, params, callback) {
+  var headers = this.options.headers || {};
 
   var promise = new Promise(function (resolve, reject) {
     var method = options.method.toLowerCase();
-
-
     var req = request[method](options.url).send(options.data);
 
     for (var header in headers) {
@@ -150,12 +153,8 @@ Client.prototype.request = function (options, callback) {
   if (!callback) return promise;
 
   promise
-    .then(function (response) {
-      callback(null, response);
-    })
-    .catch(function (err) {
-      callback(err);
-    });
+    .then(callback.bind(null, null))
+    .catch(callback);
 };
 
 /**
@@ -164,12 +163,18 @@ Client.prototype.request = function (options, callback) {
  * @param   {any}     [id]  The id for the requested resource.
  * @return  {String}        The URL for the requested resource.
  */
-Client.prototype.getURL = function (id) {
+Client.prototype.getURL = function (params) {
   var url = this.url.protocol + '//' + this.url.host + this.url.path;
 
-  if (id !== null && id !== undefined) {
-    url += '/' + id;
+  if (typeof params  !== 'object') return url;
+
+  for (var key in params) {
+    if (url.indexOf(':' + key) > -1) {
+      url = url.replace(':' + key, params[key]);
+    }
   }
+
+  url = url.replace(/\/:[^\/]+/g, '');
 
   return url;
 };
