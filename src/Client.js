@@ -54,21 +54,47 @@ Client.prototype.get = function (params, callback) {
 /**
  * Send a request to create a new resource.
  *
+ * @param   {Object}    params  URL params or query string params.
  * @param   {Object}    data    The data for the new resource.
  * @return  {Promise}           Resolves to the just created object.
  */
-Client.prototype.create = function (data, callback) {
+Client.prototype.create = function (/* [params,] data, callback */) {
+  var params = {};
+  var data = {};
+  var callback = null;
+
+  // Signature create(params, data, callback).
+  if (arguments.length === 3) {
+    params = arguments[0];
+    data = arguments[1];
+    callback = arguments[2];
+
+  // Signature create(data, callback).
+  } else if (arguments.length === 2 && arguments[1] instanceof Function) {
+    data = arguments[0];
+    callback = arguments[1];
+
+  // Signature create(params, data).
+  } else if (arguments.length === 2) {
+    params = arguments[0];
+    data = arguments[1];
+
+  // Signature create(data).
+  } else {
+    data = arguments[0];
+  }
+
   if (typeof data !== 'object') {
     throw new ArgumentError('Missing data object');
   }
 
   var options = {
-    url : this.getURL(data),
+    url : this.getURL(params),
     method: 'POST',
     data: data
   };
 
-  return this.request(options, data, callback);
+  return this.request(options, params, callback);
 };
 
 /**
@@ -137,12 +163,19 @@ Client.prototype.request = function (options, params, callback) {
 
   var promise = new Promise(function (resolve, reject) {
     var method = options.method.toLowerCase();
+
+    // Set methods and attach the body of the request (if this is a POST request).
     var req = request[method](options.url).send(options.data);
 
+    // Add request headers.
     for (var header in headers) {
       req = req.set(header, headers[header]);
     }
 
+    // Add all the given parameters to the querystring.
+    req = req.query(params || {});
+
+    // Send the request.
     req
       .set('Accept', 'application/json')
       .end(function (err, res) {
@@ -171,6 +204,7 @@ Client.prototype.getURL = function (params) {
   for (var key in params) {
     if (url.indexOf(':' + key) > -1) {
       url = url.replace(':' + key, params[key]);
+      delete params[key];
     }
   }
 

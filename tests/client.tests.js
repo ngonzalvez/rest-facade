@@ -230,14 +230,14 @@ module.exports = {
             name: 'Test resource'
           };
 
-          this.client.create(data, function () {
+          this.client.create({}, data, function () {
             done();
           });
         },
 
       'should return a promise when no callback is provided':
         function () {
-          var returnValue = this.client.create({ name: 'test' });
+          var returnValue = this.client.create({}, { name: 'test' });
 
           expect(returnValue).to.be.an.instanceOf(Promise);
         },
@@ -248,7 +248,7 @@ module.exports = {
           var request = this.nock;
 
           this.client
-            .create(this.resource)
+            .create({}, this.resource)
             .then(function (data) {
               expect(data).to.be.an.instanceOf(Object);
               expect(data.name).to.equal(expectedName);
@@ -263,7 +263,7 @@ module.exports = {
           nock.cleanAll();
           this.nock = nock(domain).post(endpoint).replyWithError();
 
-          this.client.create(this.resource, function (err) {
+          this.client.create({}, this.resource, function (err) {
             expect(err).to.exist;
             done();
           });
