@@ -31,7 +31,24 @@ var Client = function (resourceUrl, options) {
  * @param   {Function} [callback]   Callback to pass the response.
  * @return  {Promise}               Promise that resolve to a list.
  */
-Client.prototype.getAll = function (params, callback) {
+Client.prototype.getAll = function (/* params, callback */) {
+  var params = {};
+  var callback = null;
+
+  // Signature getAll(urlParams, callback).
+  if (arguments.length === 2) {
+    params = arguments[0];
+    callback = arguments[1];
+
+  // Signature getAll(callback).
+  } else if (arguments[0] instanceof Function) {
+    callback = arguments[0];
+
+  // Signature getAll(urlParams).
+  } else if (typeof arguments[0] === 'object') {
+    parmas = arguments[0];
+  }
+
   return this.get(params, callback);
 };
 
@@ -133,8 +150,24 @@ Client.prototype.update = function (params, data, callback) {
  * @param   {Function}  [callback]  Callback function.
  * @return  {Promise}               Deletion promise.
  */
-Client.prototype.delete = function (params, callback) {
-  params = params || {};
+Client.prototype.delete = function (/* [urlParams], [callback] */) {
+  var callback = null;
+  var params = {};
+
+  // Signature delete(urlParams, callback).
+  if (arguments.length === 2) {
+    params = arguments[0];
+    callback = arguments[1];
+
+  // Signature delete(callback).
+  } else if (arguments.length === 1 && arguments[1] instanceof Function) {
+    callback = arguments[0];
+
+  // Signature delete(urlParams).
+  } else {
+    params = arguments[0];
+  }
+
 
   if (params.id === null || params.id === undefined) {
     throw new ArgumentError('The resource ID cannot be null or undefined');
