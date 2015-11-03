@@ -20,7 +20,7 @@ var Client = function (resourceUrl, options) {
   }
 
   this.options = options || {};
-  this.options.query = options.query || { convertCase: null };
+  this.options.query = this.options.query || { convertCase: null };
   this.url = url.parse(resourceUrl);
 };
 
