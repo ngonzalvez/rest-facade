@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "bluebird": "^2.10.2",
+    "change-case": "^2.3.0",
     "superagent": "^1.4.0"
   }
 }

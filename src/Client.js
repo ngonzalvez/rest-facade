@@ -1,9 +1,9 @@
 var extend = require('util')._extend;
 var url = require('url');
+var changeCase = require('change-case');
 
 var request = require('superagent');
 var Promise = require('bluebird');
-
 var ArgumentError = require('./exceptions').ArgumentError;
 
 
@@ -20,6 +20,7 @@ var Client = function (resourceUrl, options) {
   }
 
   this.options = options || {};
+  this.options.query = options.query || { convertCase: null };
   this.url = url.parse(resourceUrl);
 };
 
@@ -193,6 +194,21 @@ Client.prototype.delete = function (/* [urlParams], [callback] */) {
  */
 Client.prototype.request = function (options, params, callback) {
   var headers = this.options.headers || {};
+  var selectedCase = this.options.query.convertCase;
+  var queryParams = {};
+  var convertCase = null;
+  var newKey = null;
+
+  // If the user specified a convertion case (e.g. 'snakeCase') convert all the
+  // query string params names to the given case.
+  if (selectedCase) {
+    convertCase = changeCase[selectedCase];
+
+    for (var prevKey in params) {
+      newKey = convertCase(prevKey);
+      queryParams[newKey] = params[prevKey];
+    }
+  }
 
   var promise = new Promise(function (resolve, reject) {
     var method = options.method.toLowerCase();
@@ -206,7 +222,7 @@ Client.prototype.request = function (options, params, callback) {
     }
 
     // Add all the given parameters to the querystring.
-    req = req.query(params || {});
+    req = req.query(queryParams);
 
     // Send the request.
     req
