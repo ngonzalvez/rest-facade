@@ -139,7 +139,7 @@ There may be some cases when you are working with an API that follows a differen
 Users.getAll({ page: 1, 'page_size': 10 });
 ~~~
 
-You can solve this problem by specifing a naming convention when creating the Rest Client. The naming convention can be any of `snakeCase`, `camelCase`, `pascalCase`, `paramCase`, or any other implemented by the [change-case]{https://github.com/blakeembrey/change-case} library.
+You can solve this problem by specifing a naming convention when creating the Rest Client. The naming convention can be any of `snakeCase`, `camelCase`, `pascalCase`, `paramCase`, or any other implemented by the [change-case](https://github.com/blakeembrey/change-case) library.
 
 ~~~js
 var Users = rest.Client('http://domain.com/users/:id', { query: { convertCase: 'snakeCase' }});
