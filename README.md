@@ -43,7 +43,7 @@ UserVideos
 ~~~
 
 
-## Get one instance from the API.
+### Get one instance from the API.
 ~~~js
 // Retrieve the user with ID 4.
 Users
@@ -119,4 +119,30 @@ All methods support callbacks. However, if a callback function is given no promi
 Users.getAll(function (err, users) {
   console.log(users.length, 'users found');
 });
+~~~
+
+### Query String
+
+All methods accept an object with URL params as first argument. The properties in this object will be used to format the URL as shown above. However, the properties defined in this object, but not in the endpoint URL, will be added as query string params.
+
+~~~js
+var Users = new rest.Client('http://domain.com/users/:id');
+
+Users.get({ id: 1 });  // Resolves to http://domain.com/users/1
+Users.getAll({ page: 1, pageSize: 10 });  // Resolves to http://domain.com/users?page=1&pageSize=10
+~~~
+
+There may be some cases when you are working with an API that follows a different naming convention, and it is not really clean to have mixed naming conventions in our code.
+
+~~~js
+// Not good.
+Users.getAll({ page: 1, 'page_size': 10 });
+~~~
+
+You can solve this problem by specifing a naming convention when creating the Rest Client. The naming convention can be any of `snakeCase`, `camelCase`, `pascalCase`, `paramCase`, or any other implemented by the [change-case]{https://github.com/blakeembrey/change-case} library.
+
+~~~js
+var Users = rest.Client('http://domain.com/users/:id', { query: { convertCase: 'snakeCase' }});
+
+Users.getAll({ page: 1, pageSize: 10 });  // Will resolve to http://domain.com/users?page=1&page_size=10
 ~~~
