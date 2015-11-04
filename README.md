@@ -1,11 +1,11 @@
-# rest-orm [![Build Status](https://travis-ci.org/ngonzalvez/rest-orm.svg?branch=master)](https://travis-ci.org/ngonzalvez/rest-orm)
+# rest-facade [![Build Status](https://travis-ci.org/ngonzalvez/rest-facade.svg?branch=master)](https://travis-ci.org/ngonzalvez/rest-facade)
 
 Node.js module that abstracts the process of consuming a REST endpoint.
 
 
 ## Installation
 
-    npm install rest-orm
+    npm install rest-facade
 
 
 ## Usage
@@ -15,7 +15,7 @@ Node.js module that abstracts the process of consuming a REST endpoint.
 When creating a new client, a URL must be given as first arguments. If the URL have dynamic params, those variable params must be marked with the colon notation, as shown below.
 
 ~~~js
-var rest = require('rest-orm');
+var rest = require('rest-facade');
 var options = {
   headers: {
     Authorization: 'Bearer token'
