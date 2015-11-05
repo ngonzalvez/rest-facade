@@ -8,6 +8,7 @@
     "test": "tests"
   },
   "scripts": {
+    "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec $(find ./tests -name *.tests.js) && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "test": "mocha $(find ./tests -name *.tests.js) --opts mocha.opts",
     "test-watch": "mocha $(find ./tests -name *.tests.js) --opts mocha.opts --watch"
   },
@@ -28,7 +29,9 @@
   "homepage": "https://github.com/ngonzalvez/rest-facade#readme",
   "devDependencies": {
     "chai": "^3.4.0",
+    "coveralls": "^2.11.4",
     "mocha": "^2.3.3",
+    "mocha-lcov-reporter": "^1.0.0",
     "nock": "^2.15.0",
     "sinon": "^1.17.2"
   },
