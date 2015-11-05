@@ -124,6 +124,35 @@ Client.prototype.create = function (/* [params,] data, callback */) {
  * @param   {Function}  [callback]  Callback function.
  * @return  {Promise}               Resolves to the updated resource.
  */
+Client.prototype.patch = function (params, data, callback) {
+  params = params || {};
+
+  if (params.id === null || params.id === undefined) {
+    throw new ArgumentError('A resource ID is required');
+  }
+
+  if (typeof data !== 'object') {
+    throw new ArgumentError('The data must be an object');
+  }
+
+  var options = {
+    method: 'PATCH',
+    url: this.getURL(params),
+    data: data
+  };
+
+  return this.request(options, params, callback);
+};
+
+/**
+ * Update an existing resource by its ID. Using the method PUT, because of semantic use, this function should be used instead of the simple one: patch, to perform a complete replacement of the element
+ *
+ * @param   {Object}    params      Object containing URL resource params.
+ * @param   {Number}    params.id   The ID of the resource to be updated.
+ * @param   {Object}    data        The new data.
+ * @param   {Function}  [callback]  Callback function.
+ * @return  {Promise}               Resolves to the updated resource.
+ */
 Client.prototype.update = function (params, data, callback) {
   params = params || {};
 
@@ -136,7 +165,7 @@ Client.prototype.update = function (params, data, callback) {
   }
 
   var options = {
-    method: 'POST',
+    method: 'PUT',
     url: this.getURL(params),
     data: data
   };
