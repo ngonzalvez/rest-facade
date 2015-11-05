@@ -283,6 +283,109 @@ module.exports = {
         }
     },
 
+    '#patch': {
+      beforeEach:
+        function () {
+          this.id = 1;
+          this.data = { name: 'Updated' };
+          this.updatedData = extend({ id: this.id }, this.data);
+
+          this.nock = nock(domain)
+            .patch(endpoint + '/' + this.id)
+            .reply(200, this.updatedData);
+        },
+
+      afterEach:
+        function () {
+          nock.cleanAll();
+        },
+
+      'should be defined':
+        function () {
+          expect(this.client.patch).to.exist;
+        },
+
+      'should accept a callback':
+        function (done) {
+          this.client.patch({ id: 1 }, {}, function () {
+            done();
+          });
+        },
+
+      'should require an ID as first argument':
+        function () {
+          var updateWithoutArgs = this.client.patch.bind(this.client);
+
+          expect(updateWithoutArgs).to.throw(ArgumentError, 'A resource ID is required');
+        },
+
+      'should require an object as second argument':
+        function () {
+          var updateWithoutData = this.client.patch.bind(this.client, { id: this.id });
+
+          expect(updateWithoutData).to.throw(ArgumentError, 'The data must be an object');
+        },
+
+      'should perform a PATCH /endpoint/:id':
+        function (done) {
+          var request = this.nock;
+
+          this.client
+            .patch({ id: this.id }, this.data)
+            .then(function () {
+              expect(request.isDone()).to.be.true;
+              done();
+            })
+            .catch(done);
+        },
+
+      'should pass the body of the response to the resolved promise':
+        function (done) {
+          var expectedData = JSON.stringify(this.updatedData);
+
+          this.client
+            .patch({ id: this.id }, this.data)
+            .then(function (data) {
+              expect(JSON.stringify(data)).to.equal(expectedData);
+              done();
+            })
+        },
+
+      'should pass the body of the response to the callback':
+        function (done) {
+          var expectedData = JSON.stringify(this.updatedData);
+
+          this.client.patch({ id: this.id }, this.data, function (err, data) {
+            expect(JSON.stringify(data)).to.equal(expectedData);
+            done();
+          });
+        },
+
+      'should pass any errors to the rejected promise':
+        function (done) {
+          nock.cleanAll();
+          this.nock = nock(domain).post(endpoint + '/' + this.id).reply(500);
+
+          this.client
+            .patch({ id: this.id }, this.data)
+            .catch(function (err) {
+              expect(err).to.exist;
+              done();
+            });
+        },
+
+      'should pass any errors to the callback function':
+        function (done) {
+          nock.cleanAll();
+          this.nock = nock(domain).post(endpoint + '/' + this.id).reply(500);
+
+          this.client.patch({ id: this.id }, this.data, function (err) {
+            expect(err).to.exist;
+            done();
+          });
+        }
+    },
+
     '#update': {
       beforeEach:
         function () {
@@ -291,7 +394,7 @@ module.exports = {
           this.updatedData = extend({ id: this.id }, this.data);
 
           this.nock = nock(domain)
-            .post(endpoint + '/' + this.id)
+            .put(endpoint + '/' + this.id)
             .reply(200, this.updatedData);
         },
 
@@ -326,7 +429,7 @@ module.exports = {
           expect(updateWithoutData).to.throw(ArgumentError, 'The data must be an object');
         },
 
-      'should perform a POST /endpoint/:id':
+      'should perform a PUT /endpoint/:id':
         function (done) {
           var request = this.nock;
 

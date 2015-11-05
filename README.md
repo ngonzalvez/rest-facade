@@ -101,8 +101,12 @@ UserVideos
 
 
 ### Update an instance.
+
+There are 2 ways to update data, if you are using correctly the HTTP methods, 1 is PUT and the other one is PATCH, rest-facade supports both of them:`Client.update` and `Client.patch`.
+
 As with the previous methods, an object with the URL parameters must be provided as first argument. The second argument must be an object with the new data.
 
+#### PUT request
 ~~~js
 Users
   .update({ id: userId }, data)
@@ -110,6 +114,19 @@ Users
     console.log('User updated');
   });
 ~~~
+
+#### PATCH request
+
+~~~js
+Users
+  .patch({ id: userId }, data)
+  .then(function () {
+    console.log('User updated');
+  });
+~~~
+
+Both functions work exactly the same, the only differenct is the method used to perform the request.
+
 
 ### Callbacks
 
