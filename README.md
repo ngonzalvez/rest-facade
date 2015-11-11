@@ -163,3 +163,10 @@ var Users = rest.Client('http://domain.com/users/:id', { query: { convertCase: '
 
 Users.getAll({ page: 1, pageSize: 10 });  // Will resolve to http://domain.com/users?page=1&page_size=10
 ~~~
+
+#### Arrays
+By default, arrays in the querystring will be formmated this way: `?a=1&a=2&a=2`. However, you can change it to comma separated values `?a=1,2,3` by setting the `query.repeatParams` option to `false`.
+
+~~~js
+var client = new rest.Client(url, { query: { repeatParams: false }});
+~~~
