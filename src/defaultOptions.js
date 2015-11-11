@@ -1,7 +1,7 @@
 module.exports = {
   query: {
     convertCase: null,
-    repeatArrays: true
+    repeatParams: true
   }
 };
 
