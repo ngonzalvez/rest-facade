@@ -5,6 +5,7 @@ var changeCase = require('change-case');
 var request = require('superagent');
 var Promise = require('bluebird');
 var ArgumentError = require('./exceptions').ArgumentError;
+var defaultOptions = require('./defaultOptions');
 
 
 /**
@@ -19,8 +20,7 @@ var Client = function (resourceUrl, options) {
     throw new ArgumentError('Missing REST endpoint URL')
   }
 
-  this.options = options || {};
-  this.options.query = this.options.query || { convertCase: null };
+  this.options = extend(defaultOptions, options);
   this.url = url.parse(resourceUrl);
 };
 
@@ -227,6 +227,7 @@ Client.prototype.request = function (options, params, callback) {
   var queryParams = {};
   var convertCase = null;
   var newKey = null;
+  var value = null;
 
   // If the user specified a convertion case (e.g. 'snakeCase') convert all the
   // query string params names to the given case.
@@ -235,7 +236,16 @@ Client.prototype.request = function (options, params, callback) {
 
     for (var prevKey in params) {
       newKey = convertCase(prevKey);
-      queryParams[newKey] = params[prevKey];
+      value = params[prevKey];
+
+      // If the repeatParams flag is set to false, encode arrays in
+      // the querystring as comma separated values.
+      // e.g. ?a=1,2,3
+      if (Array.isArray(value) && !this.options.query.repeatParams) {
+        value = value.join(',');
+      }
+
+      queryParams[newKey] = value;
     }
   }
 
