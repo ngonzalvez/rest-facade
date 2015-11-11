@@ -47,7 +47,7 @@ Client.prototype.getAll = function (/* params, callback */) {
 
   // Signature getAll(urlParams).
   } else if (typeof arguments[0] === 'object') {
-    parmas = arguments[0];
+    params = arguments[0];
   }
 
   return this.get(params, callback);
