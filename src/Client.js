@@ -32,7 +32,7 @@ var Client = function (resourceUrl, options) {
  * @param   {Function} [callback]   Callback to pass the response.
  * @return  {Promise}               Promise that resolve to a list.
  */
-Client.prototype.getAll = function (/* params, callback */) {
+Client.prototype.getAll = function (/* [params], [callback] */) {
   var params = {};
   var callback = null;
 
@@ -186,11 +186,6 @@ Client.prototype.delete = function (/* [urlParams], [callback] */) {
   // Signature delete(urlParams).
   } else {
     params = arguments[0];
-  }
-
-
-  if (params.id === null || params.id === undefined) {
-    throw new ArgumentError('The resource ID cannot be null or undefined');
   }
 
   var options = {
