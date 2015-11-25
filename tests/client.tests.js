@@ -221,7 +221,8 @@ module.exports = {
 
       'should require a data object as first argument':
         function () {
-          expect(this.client.create).to.throw(ArgumentError, 'Missing data object');
+          expect(this.client.create)
+            .to.throw(ArgumentError, 'Missing data object');
         },
 
       'should allow a callback as second argument':
@@ -310,13 +311,6 @@ module.exports = {
           this.client.patch({ id: 1 }, {}, function () {
             done();
           });
-        },
-
-      'should require an ID as first argument':
-        function () {
-          var updateWithoutArgs = this.client.patch.bind(this.client);
-
-          expect(updateWithoutArgs).to.throw(ArgumentError, 'A resource ID is required');
         },
 
       'should require an object as second argument':
@@ -413,13 +407,6 @@ module.exports = {
           this.client.update({ id: 1 }, {}, function () {
             done();
           });
-        },
-
-      'should require an ID as first argument':
-        function () {
-          var updateWithoutArgs = this.client.update.bind(this.client);
-
-          expect(updateWithoutArgs).to.throw(ArgumentError, 'A resource ID is required');
         },
 
       'should require an object as second argument':
