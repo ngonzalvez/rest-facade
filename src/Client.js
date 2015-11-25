@@ -50,6 +50,9 @@ Client.prototype.getAll = function (/* [params], [callback] */) {
     params = arguments[0];
   }
 
+  // Prevent the getURL function from modifying this object.
+  params = extend({}, params);
+
   return this.get(params, callback);
 };
 
@@ -61,6 +64,9 @@ Client.prototype.getAll = function (/* [params], [callback] */) {
  * @param   {Function}  [callback]  A callback to be called
  */
 Client.prototype.get = function (params, callback) {
+  // Prevent the getURL function from modifying this object.
+  params = extend({}, params);
+
   var options = {
     url: this.getURL(params || {}),
     method: 'GET'
@@ -106,6 +112,9 @@ Client.prototype.create = function (/* [params,] data, callback */) {
     throw new ArgumentError('Missing data object');
   }
 
+  // Prevent the getURL function from modifying this object.
+  params = extend({}, params);
+
   var options = {
     url : this.getURL(params),
     method: 'POST',
@@ -124,7 +133,8 @@ Client.prototype.create = function (/* [params,] data, callback */) {
  * @return  {Promise}               Resolves to the updated resource.
  */
 Client.prototype.patch = function (params, data, callback) {
-  params = params || {};
+  // Prevent the getURL function from modifying this object.
+  params = extend({}, params) || {};
 
   if (typeof data !== 'object') {
     throw new ArgumentError('The data must be an object');
@@ -140,7 +150,9 @@ Client.prototype.patch = function (params, data, callback) {
 };
 
 /**
- * Update an existing resource by its ID. Using the method PUT, because of semantic use, this function should be used instead of the simple one: patch, to perform a complete replacement of the element
+ * Update an existing resource by its ID. Using the method PUT, because of
+ * semantic use, this function should be used instead of the simple one: patch,
+ * to perform a complete replacement of the element
  *
  * @param   {Object}    params      Object containing URL resource params.
  * @param   {Object}    data        The new data.
@@ -148,7 +160,8 @@ Client.prototype.patch = function (params, data, callback) {
  * @return  {Promise}               Resolves to the updated resource.
  */
 Client.prototype.update = function (params, data, callback) {
-  params = params || {};
+  // Prevent the getURL function from modifying this object.
+  params = extend({}, params) || {};
 
   if (typeof data !== 'object') {
     throw new ArgumentError('The data must be an object');
@@ -187,6 +200,9 @@ Client.prototype.delete = function (/* [urlParams], [callback] */) {
   } else {
     params = arguments[0];
   }
+
+  // Prevent the getURL function from modifying this object.
+  params = extend({}, params);
 
   var options = {
     method: 'DEL',
