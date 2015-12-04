@@ -110,6 +110,28 @@ module.exports = {
               expect(objects[0].id).to.equal(5);
               done();
             });
+        },
+
+      'should pass the given params in the query-string':
+        function (done) {
+          var params = {
+            first_name: 'john',
+            last_name: 'doe'
+          };
+
+          nock.cleanAll();
+
+          var request = nock(domain)
+            .get(endpoint)
+            .query(params)
+            .reply(200);
+
+          this.client
+            .getAll(params)
+            .then(function (objects) {
+              expect(request.isDone()).to.be.true;
+              done();
+            });
         }
     },
 
