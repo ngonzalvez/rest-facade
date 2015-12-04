@@ -226,28 +226,24 @@ Client.prototype.request = function (options, params, callback) {
   var headers = this.options.headers || {};
   var selectedCase = this.options.query.convertCase;
   var queryParams = {};
-  var convertCase = null;
+  var convertCase = selectedCase ? changeCase[selectedCase] : null;
   var newKey = null;
   var value = null;
 
-  // If the user specified a convertion case (e.g. 'snakeCase') convert all the
-  // query string params names to the given case.
-  if (selectedCase) {
-    convertCase = changeCase[selectedCase];
+  for (var prevKey in params) {
+    // If the user specified a convertion case (e.g. 'snakeCase') convert the
+    // query string params names to the given case.
+    newKey = convertCase ? convertCase(prevKey) : prevKey;
+    value = params[prevKey];
 
-    for (var prevKey in params) {
-      newKey = convertCase(prevKey);
-      value = params[prevKey];
-
-      // If the repeatParams flag is set to false, encode arrays in
-      // the querystring as comma separated values.
-      // e.g. ?a=1,2,3
-      if (Array.isArray(value) && !this.options.query.repeatParams) {
-        value = value.join(',');
-      }
-
-      queryParams[newKey] = value;
+    // If the repeatParams flag is set to false, encode arrays in
+    // the querystring as comma separated values.
+    // e.g. ?a=1,2,3
+    if (Array.isArray(value) && !this.options.query.repeatParams) {
+      value = value.join(',');
     }
+
+    queryParams[newKey] = value;
   }
 
   var promise = new Promise(function (resolve, reject) {
