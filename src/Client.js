@@ -265,16 +265,16 @@ Client.prototype.request = function (options, params, callback) {
     req
       .set('Accept', 'application/json')
       .end(function (err, res) {
-        if (err) {
-          var response = err.response || {};
-          var data = response.body || {};
+        if (err && err.response && err.response.body) {
+          var data = response.response.body;
           var status = err.status;
-
           var name = data.name || data.title || data.error;
           var message = data.message || data.error_message;
           var error = new APIError(name, message, status);
 
           return reject(error);
+        } else if (err) {
+          return reject(err);
         }
 
         resolve(res.body);
