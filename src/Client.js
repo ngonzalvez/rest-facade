@@ -5,6 +5,7 @@ var changeCase = require('change-case');
 var request = require('superagent');
 var Promise = require('bluebird');
 var ArgumentError = require('./exceptions').ArgumentError;
+var APIError = require('./exceptions').APIError;
 var defaultOptions = require('./defaultOptions');
 
 
@@ -264,7 +265,19 @@ Client.prototype.request = function (options, params, callback) {
     req
       .set('Accept', 'application/json')
       .end(function (err, res) {
-        return err ? reject(err) : resolve(res.body);
+        if (err) {
+          var response = err.response || {};
+          var data = response.body || {};
+          var status = err.status;
+
+          var name = data.name || data.title || data.error;
+          var message = data.message || data.error_message;
+          var error = new APIError(name, message, status);
+
+          return reject(error);
+        }
+
+        resolve(res.body);
       });
   });
 
