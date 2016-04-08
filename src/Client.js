@@ -21,7 +21,8 @@ var Client = function (resourceUrl, options) {
     throw new ArgumentError('Missing REST endpoint URL')
   }
 
-  this.options = extend(defaultOptions, options);
+  this.options = extend({}, defaultOptions);
+  this.options = extend(this.options, options);
   this.url = url.parse(resourceUrl);
 };
 
