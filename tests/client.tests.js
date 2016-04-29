@@ -219,7 +219,7 @@ module.exports = {
           function (done) {
             this.client.get({ id: 'FAIL' }, function (err) {
               expect(err).to.exist;
-              done()
+              done();
             });
           }
     },
