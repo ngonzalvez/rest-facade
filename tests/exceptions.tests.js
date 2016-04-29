@@ -31,11 +31,11 @@ module.exports = {
           expect(this.error.message).to.eql('Missing data object');
         },
 
-      'should have a stack with the message and the location the error was created':
+      'should have a stack with the message and location the error was created':
         function () {
           expect(this.error.stack).to.exist;
           var stackLines = this.error.stack.split('\n');
-          expect(stackLines[0]).to.include('ArgumentError: Missing data object');
+          expect(stackLines[0]).to.eql('ArgumentError: Missing data object');
           expect(stackLines[1]).to.include('tests/exceptions.tests.js:11');
         }
     }
@@ -72,11 +72,11 @@ module.exports = {
           expect(this.error.statusCode).to.eql(401);
         },
 
-      'should have a stack with the message and the location the error was created':
+      'should have a stack with the message and location the error was created':
         function () {
           expect(this.error.stack).to.exist;
           var stackLines = this.error.stack.split('\n');
-          expect(stackLines[0]).to.include('Unauthorized: Invalid token');
+          expect(stackLines[0]).to.eql('Unauthorized: Invalid token');
           expect(stackLines[1]).to.include('tests/exceptions.tests.js:47');
         }
     }
