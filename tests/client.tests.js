@@ -139,8 +139,12 @@ module.exports = {
       beforeEach:
         function () {
           this.data = { name: 'Test' };
-          this.successReq = nock(domain).get(endpoint + '/OK').reply(200, this.data);
-          this.errorReq = nock(domain).get(endpoint + '/FAIL').replyWithError({name: 'Unauthorized', message: 'Invalid token'});
+          this.successReq = nock(domain)
+            .get(endpoint + '/OK')
+            .reply(200, this.data);
+          this.errorReq = nock(domain)
+            .get(endpoint + '/FAIL')
+            .replyWithError({name: 'Unauthorized', message: 'Invalid token'});
         },
 
       afterEach:
