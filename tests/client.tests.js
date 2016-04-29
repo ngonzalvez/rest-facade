@@ -140,7 +140,7 @@ module.exports = {
         function () {
           this.data = { name: 'Test' };
           this.successReq = nock(domain).get(endpoint + '/OK').reply(200, this.data);
-          this.errorReq = nock(domain).get(endpoint + '/FAIL').replyWithError();
+          this.errorReq = nock(domain).get(endpoint + '/FAIL').replyWithError({name: 'Unauthorized', message: 'Invalid token'});
         },
 
       afterEach:
@@ -213,9 +213,10 @@ module.exports = {
 
         'should pass the errors to the callback':
           function (done) {
-            var req = this.errorReq;
-
-            done();
+            this.client.get({ id: 'FAIL' }, function (err) {
+              expect(err).to.exist
+              done()
+            });
           }
     },
 
