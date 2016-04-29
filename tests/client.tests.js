@@ -214,7 +214,7 @@ module.exports = {
         'should pass the errors to the callback':
           function (done) {
             this.client.get({ id: 'FAIL' }, function (err) {
-              expect(err).to.exist
+              expect(err).to.exist;
               done()
             });
           }

@@ -7,8 +7,8 @@ var APIError = exceptions.APIError;
 module.exports = {
   'AgrumentError': {
     '#constructor': {
-      beforeEach() {
-        this.error = new ArgumentError('Missing data object')
+      beforeEach: function() {
+        this.error = new ArgumentError('Missing data object');
       },
 
       'should be an instance of the builtin Error':
@@ -31,20 +31,20 @@ module.exports = {
           expect(this.error.message).to.eql('Missing data object');
         },
 
-      'should have a stack with the message and the first frame as the location the error was created':
+      'should have a stack with the message and the location the error was created':
         function () {
-          expect(this.error.stack).to.exist
-          var stackLines = this.error.stack.split('\n')
-          expect(stackLines[0]).to.include('ArgumentError: Missing data object')
-          expect(stackLines[1]).to.include('tests/exceptions.tests.js:11')
+          expect(this.error.stack).to.exist;
+          var stackLines = this.error.stack.split('\n');
+          expect(stackLines[0]).to.include('ArgumentError: Missing data object');
+          expect(stackLines[1]).to.include('tests/exceptions.tests.js:11');
         }
     }
   },
 
   'APIError': {
     '#constructor': {
-      beforeEach() {
-        this.error = new APIError('Unauthorized', 'Invalid token', 401)
+      beforeEach: function() {
+        this.error = new APIError('Unauthorized', 'Invalid token', 401);
       },
 
       'should be an instance of the builtin Error':
@@ -72,12 +72,12 @@ module.exports = {
           expect(this.error.statusCode).to.eql(401);
         },
 
-      'should have a stack with the message and the first frame as the location the error was created':
+      'should have a stack with the message and the location the error was created':
         function () {
-          expect(this.error.stack).to.exist
-          var stackLines = this.error.stack.split('\n')
-          expect(stackLines[0]).to.include('Unauthorized: Invalid token')
-          expect(stackLines[1]).to.include('tests/exceptions.tests.js:47')
+          expect(this.error.stack).to.exist;
+          var stackLines = this.error.stack.split('\n');
+          expect(stackLines[0]).to.include('Unauthorized: Invalid token');
+          expect(stackLines[1]).to.include('tests/exceptions.tests.js:47');
         }
     }
   }
