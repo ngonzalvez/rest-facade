@@ -272,13 +272,13 @@ Client.prototype.request = function (options, params, callback) {
           var status = err.status;
           var error;
 
-          if ( errorFormatter && errorFormatter.hasOwnProperty('name')
-            && errorFormatter.hasOwnProperty('message')) {
-             var name = goToPath(errorFormatter['name']);
-             var message = goToPath(errorFormatter['message']);
+          if (errorFormatter && errorFormatter.hasOwnProperty('name') &&
+              errorFormatter.hasOwnProperty('message')) {
+             var name = goToPath(errorFormatter.name);
+             var message = goToPath(errorFormatter.message);
              error = new APIError(name, message, status);
           } else {
-            error = new APIError('APIError', JSON.stringify(data), status)
+            error = new APIError('APIError', JSON.stringify(data), status);
           }
 
           return reject(error);
