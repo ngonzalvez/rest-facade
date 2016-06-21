@@ -7,7 +7,7 @@ var Promise = require('bluebird');
 var ArgumentError = require('./exceptions').ArgumentError;
 var APIError = require('./exceptions').APIError;
 var defaultOptions = require('./defaultOptions');
-
+var goToPath = require('./utils');
 
 /**
  * @class
@@ -225,6 +225,7 @@ Client.prototype.delete = function (/* [urlParams], [callback] */) {
  */
 Client.prototype.request = function (options, params, callback) {
   var headers = this.options.headers || {};
+  var errorFormatter = this.options.errorFormatter || null;
   var selectedCase = this.options.query.convertCase;
   var queryParams = {};
   var convertCase = selectedCase ? changeCase[selectedCase] : null;
@@ -269,10 +270,16 @@ Client.prototype.request = function (options, params, callback) {
           var response = err.response || {};
           var data = response.body || {};
           var status = err.status;
+          var error;
 
-          var name = data.name || data.title || data.error;
-          var message = data.message || data.error_message;
-          var error = new APIError(name, message, status);
+          if ( errorFormatter && errorFormatter.hasOwnProperty('name')
+            && errorFormatter.hasOwnProperty('message')) {
+             var name = goToPath(errorFormatter['name']);
+             var message = goToPath(errorFormatter['message']);
+             error = new APIError(name, message, status);
+          } else {
+            error = new APIError('APIError', JSON.stringify(data), status)
+          }
 
           return reject(error);
         }

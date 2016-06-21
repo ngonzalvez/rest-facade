@@ -19,6 +19,10 @@ var rest = require('rest-facade');
 var options = {
   headers: {
     Authorization: 'Bearer token'
+  },
+  errorFormatter: {
+    name: 'error.title',
+    message: 'error.text',
   }
 };
 
