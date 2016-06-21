@@ -7,7 +7,7 @@ var Promise = require('bluebird');
 var ArgumentError = require('./exceptions').ArgumentError;
 var APIError = require('./exceptions').APIError;
 var defaultOptions = require('./defaultOptions');
-
+var goToPath = require('./utils');
 
 /**
  * @class
@@ -21,7 +21,8 @@ var Client = function (resourceUrl, options) {
     throw new ArgumentError('Missing REST endpoint URL')
   }
 
-  this.options = extend(defaultOptions, options);
+  this.options = extend({}, defaultOptions);
+  this.options = extend(this.options, options);
   this.url = url.parse(resourceUrl);
 };
 
@@ -225,6 +226,7 @@ Client.prototype.delete = function (/* [urlParams], [callback] */) {
  */
 Client.prototype.request = function (options, params, callback) {
   var headers = this.options.headers || {};
+  var errorFormatter = this.options.errorFormatter || null;
   var selectedCase = this.options.query.convertCase;
   var queryParams = {};
   var convertCase = selectedCase ? changeCase[selectedCase] : null;
@@ -268,9 +270,16 @@ Client.prototype.request = function (options, params, callback) {
         if (err && err.response && err.response.body) {
           var data = response.response.body;
           var status = err.status;
-          var name = data.name || data.title || data.error;
-          var message = data.message || data.error_message;
-          var error = new APIError(name, message, status);
+          var error;
+
+          if (errorFormatter && errorFormatter.hasOwnProperty('name') &&
+              errorFormatter.hasOwnProperty('message')) {
+             var name = goToPath(errorFormatter.name);
+             var message = goToPath(errorFormatter.message);
+             error = new APIError(name, message, status);
+          } else {
+            error = new APIError('APIError', JSON.stringify(data), status);
+          }
 
           return reject(error);
         } else if (err) {
