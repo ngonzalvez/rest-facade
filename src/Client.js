@@ -275,8 +275,8 @@ Client.prototype.request = function (options, params, callback) {
 
           if (errorFormatter && errorFormatter.hasOwnProperty('name') &&
               errorFormatter.hasOwnProperty('message')) {
-             var name = goToPath(errorFormatter.name);
-             var message = goToPath(errorFormatter.message);
+             var name = goToPath(errorFormatter.name, data);
+             var message = goToPath(errorFormatter.message, data);
              error = new APIError(name, message, status);
           } else {
             error = new APIError('APIError', JSON.stringify(data), status);
