@@ -17,7 +17,7 @@ module.exports = {
   'Client': {
     beforeEach:
       function () {
-        this.client = new Client (domain + endpoint + '/:id');
+        this.client = new Client(domain + endpoint + '/:id');
       },
 
     '#constructor': {
@@ -560,6 +560,23 @@ module.exports = {
 
           this.client.delete({ id: 1 }, function (err) {
             expect(err).to.exist;
+            done();
+          });
+        }
+    },
+
+    '#request': {
+      'should convert the body of the request when case-conversion is enabled':
+        function (done) {
+          nock.cleanAll();
+
+          var options = { request: { body: { convertCase: 'snakeCase' }}};
+          var expected = { first_name: 'John', last_name: 'Doe' };
+          var client = this.client = new Client(domain + endpoint, options);
+          var request = nock(domain).post(endpoint, expected).reply(200);
+
+          client.create({ firstName: 'John', lastName: 'Doe' }, function (err) {
+            expect(request.isDone()).to.be.true;
             done();
           });
         }
