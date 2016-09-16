@@ -174,3 +174,33 @@ By default, arrays in the querystring will be formmated this way: `?a=1&a=2&a=2`
 ~~~js
 var client = new rest.Client(url, { query: { repeatParams: false }});
 ~~~
+
+
+### Body Case Conversion
+Rest-facade provides options for converting the body of the request/response. So, let's say you are consuming an API implemented in Python (using snake_case) and you want it converted to camelCase. You would specify the following options:
+
+~~~js
+var client = new rest.Client(url, {
+  request: {
+    body: {
+      convertCase: 'snakeCase'
+    }
+  },
+  response: {
+    body: {
+      convertCase: 'camelCase'
+    }
+  }
+});
+~~~
+
+Once that's done, you can send any request and the body of it will be converted to snake_case. E.g.
+
+~~~js
+client.create({ firstName: 'John', lastName: 'Doe' }); 
+
+// The server will receive 
+// { first_name: 'John', last_name: 'Doe' }
+~~~
+
+The same way, all the responses from the server will converted to the specified case (camelCase in this example).
