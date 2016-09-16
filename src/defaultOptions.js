@@ -3,8 +3,11 @@ module.exports = {
     convertCase: null,
     repeatParams: true
   },
-  body: {
-    convertCase: null
+
+  request: {
+    body: {
+      convertCase: null
+    }
   }
 };
 
