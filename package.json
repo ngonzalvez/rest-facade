@@ -1,6 +1,6 @@
 {
   "name": "rest-facade",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Simple abstraction for consuming REST API endpoints",
   "main": "src/index.js",
   "directories": {
