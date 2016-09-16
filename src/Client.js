@@ -229,9 +229,11 @@ Client.prototype.request = function (options, params, callback) {
   var errorFormatter = this.options.errorFormatter || null;
   var paramsCase = this.options.query.convertCase;
   var bodyCase = this.options.request.body.convertCase;
+  var responseCase = this.options.response.body.convertCase;
   var queryParams = {};
   var convertCaseParams = paramsCase ? changeCase[paramsCase] : null;
   var convertCaseBody = bodyCase ? changeCase[bodyCase] : null;
+  var convertCaseRes = responseCase ? changeCase[responseCase] : null;
   var newKey = null;
   var value = null;
 
@@ -294,6 +296,20 @@ Client.prototype.request = function (options, params, callback) {
           }
 
           return reject(error);
+        }
+
+        // If case conversion is enabled for the body of the response, convert
+        // the properties of the body to the specified case.
+        if (convertCaseRes) {
+          for (var key in res.body) {
+            if (res.body.hasOwnProperty(key)) {
+              res.body[convertCaseRes(key)] = res.body[key];
+
+              if (key !== convertCaseRes(key)) {
+                delete res.body[key];
+              }
+            }
+          }
         }
 
         resolve(res.body);

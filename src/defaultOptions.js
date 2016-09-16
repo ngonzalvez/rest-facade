@@ -8,6 +8,12 @@ module.exports = {
     body: {
       convertCase: null
     }
+  },
+
+  response: {
+    body: {
+      convertCase: null
+    }
   }
 };
 
