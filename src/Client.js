@@ -227,16 +227,18 @@ Client.prototype.delete = function (/* [urlParams], [callback] */) {
 Client.prototype.request = function (options, params, callback) {
   var headers = this.options.headers || {};
   var errorFormatter = this.options.errorFormatter || null;
-  var selectedCase = this.options.query.convertCase;
+  var paramsCase = this.options.query.convertCase;
+  var bodyCase = this.options.body.convertCase;
   var queryParams = {};
-  var convertCase = selectedCase ? changeCase[selectedCase] : null;
+  var convertCaseParams = paramsCase ? changeCase[paramsCase] : null;
+  var convertCaseBody = bodyCase ? changeCase[bodyCase] : null;
   var newKey = null;
   var value = null;
 
   for (var prevKey in params) {
     // If the user specified a convertion case (e.g. 'snakeCase') convert the
     // query string params names to the given case.
-    newKey = convertCase ? convertCase(prevKey) : prevKey;
+    newKey = convertCaseParams ? convertCaseParams(prevKey) : prevKey;
     value = params[prevKey];
 
     // If the repeatParams flag is set to false, encode arrays in
@@ -247,6 +249,15 @@ Client.prototype.request = function (options, params, callback) {
     }
 
     queryParams[newKey] = value;
+  }
+
+  if (convertCaseBody) {
+    for (var key in options.data) {
+      if (options.data.hasOwnProperty(key)) {
+        options.data[convertCaseBody(key)] = options.data[key];
+        delete options.data[key];
+      }
+    }
   }
 
   var promise = new Promise(function (resolve, reject) {
