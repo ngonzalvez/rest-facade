@@ -566,10 +566,12 @@ module.exports = {
     },
 
     '#request': {
+      beforeEach: function () {
+        nock.cleanAll();
+      },
+
       'should convert the body of the request when case-conversion is enabled':
         function (done) {
-          nock.cleanAll();
-
           var options = { request: { body: { convertCase: 'snakeCase' }}};
           var expected = { first_name: 'John', last_name: 'Doe' };
           var client = this.client = new Client(domain + endpoint, options);
@@ -579,6 +581,25 @@ module.exports = {
             expect(request.isDone()).to.be.true;
             done();
           });
+        },
+
+      'should convert the body of the response when case-conversion is enabled':
+        function (done) {
+          var options = { response: { body: { convertCase: 'camelCase' }}};
+          var id = 1;
+          var original = { first_name: 'John', last_name: 'Doe' };
+          var client = this.client = new Client(domain + endpoint + '/:id', options);
+          var request = nock(domain).get(endpoint + '/' + id).reply(200, original);
+
+          client
+            .get({ id: id })
+            .then(function(data) {
+              expect(data.first_name).to.be.undefined;
+              expect(data.last_name).to.be.undefined;
+              expect(data.firstName).to.equal('John');
+              expect(data.lastName).to.equal('Doe');
+              done();
+            });
         }
     }
   }
