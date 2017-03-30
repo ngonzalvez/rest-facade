@@ -41,8 +41,8 @@ The `getAll()` method can take an optional object as first parameters specifying
 // This will resolve to a "GET http://domain.com/users/4/videos" request.
 UserVideos
   .getAll({ userId: 4 })
-  .then(function (users) {
-    console.log(users.length, 'users retrieved');
+  .then(function (videos) {
+    console.log(videos.length, 'videos retrieved');
   });
 ~~~
 
