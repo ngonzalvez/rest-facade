@@ -195,7 +195,7 @@ Client.prototype.delete = function (/* [urlParams], [callback] */) {
     callback = arguments[1];
 
   // Signature delete(callback).
-  } else if (arguments.length === 1 && arguments[1] instanceof Function) {
+  } else if (arguments.length === 1 && arguments[0] instanceof Function) {
     callback = arguments[0];
 
   // Signature delete(urlParams).
