@@ -1,7 +1,7 @@
-var objectProto = Object.prototype
-var hasOwnProperty = objectProto.hasOwnProperty
-var toString = objectProto.toString
-var symToStringTag = typeof Symbol != 'undefined' ? Symbol.toStringTag : undefined
+var objectProto = Object.prototype;
+var hasOwnProperty = objectProto.hasOwnProperty;
+var toString = objectProto.toString;
+var symToStringTag = typeof Symbol != 'undefined' ? Symbol.toStringTag : undefined;
 
 /*
 * Auxiliar function for get the error attributes
@@ -38,29 +38,29 @@ function goToPath(path, obj) {
  */
 function baseGetTag(value) {
   if (value == null) {
-    return value === undefined ? '[object Undefined]' : '[object Null]'
+    return value === undefined ? '[object Undefined]' : '[object Null]';
   }
   if (!(symToStringTag && symToStringTag in Object(value))) {
-    return toString.call(value)
+    return toString.call(value);
   }
-  var isOwn = hasOwnProperty.call(value, symToStringTag)
-  var tag = value[symToStringTag]
-  var unmasked = false
+  var isOwn = hasOwnProperty.call(value, symToStringTag);
+  var tag = value[symToStringTag];
+  var unmasked = false;
 
   try {
-    value[symToStringTag] = undefined
-    unmasked = true
+    value[symToStringTag] = undefined;
+    unmasked = true;
   } catch (e) {}
 
-  const result = toString.call(value)
+  const result = toString.call(value);
   if (unmasked) {
     if (isOwn) {
-      value[symToStringTag] = tag
+      value[symToStringTag] = tag;
     } else {
-      delete value[symToStringTag]
+      delete value[symToStringTag];
     }
   }
-  return result
+  return result;
 }
 
 function isObject(value) {
@@ -71,7 +71,7 @@ function isObject(value) {
 
 function isFunction(value) {
   if (!isObject(value)) {
-    return false
+    return false;
   }
 
   var tag = baseGetTag(value);
