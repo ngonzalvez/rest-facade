@@ -290,7 +290,7 @@ Client.prototype.request = function (options, params, callback) {
     }
 
     if (isFunction(params._requestCustomizer)) {
-      params.customizeRequest(req, params);
+      params._requestCustomizer(req, params);
     }
 
     // Send the request.

@@ -623,11 +623,13 @@ module.exports = {
         function (done) {
           var expected = { first_name: 'John', last_name: 'Doe' };
           var client = this.client = new Client(domain + endpoint);
-          var request = nock(domain, { reqheaders: { 'X-Fake': '1' } }).post(endpoint, expected).reply(200);
+          var request = nock(domain, { reqheaders : {
+              'X-Fake': '1'
+          } }).post(endpoint, expected).reply(200);
 
-          var reqfn = function(req, params) { req.header('X-Fake', '1'); };
+          var reqfn = function(req, params) { req.set('X-Fake', '1'); };
 
-          client.create({ first_name: 'John', last_name: 'Doe', _requestCustomizer : reqfn }, function (err) {
+          client.create({_requestCustomizer : reqfn}, { first_name: 'John', last_name: 'Doe' }, function (err) {
             expect(request.isDone()).to.be.true;
             done();
           });
