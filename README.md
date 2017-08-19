@@ -146,6 +146,8 @@ Users.getAll(function (err, users) {
 
 All methods accept an object with URL params as first argument. The properties in this object will be used to format the URL as shown above. However, the properties defined in this object, but not in the endpoint URL, will be added as query string params.
 
+> N.B. any properties in a given `options` object whose values are Functions will be ignored with regard to generating the query string. 
+
 ~~~js
 var Users = new rest.Client('http://domain.com/users/:id');
 
@@ -204,3 +206,18 @@ client.create({ firstName: 'John', lastName: 'Doe' });
 ~~~
 
 The same way, all the responses from the server will converted to the specified case (camelCase in this example).
+
+### Per-Request Customization
+Sometimes you need to do some customization to each individual request that is sent to the consumed API, 
+a likely candidate is for adding request-specific headers.
+
+This can be done in two ways:
+
+- defining a function in global options under `options.request.customizer`    
+- passing in a options object to a method call that contains a "special" `_requestCustomizer` property (which should be a function as well!)
+
+You can define both, in which case both will be applied (in the order listed above).
+
+In each case the function is passed the `req` and `params` representing the API call in question.
+
+
