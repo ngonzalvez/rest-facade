@@ -52,7 +52,7 @@ function baseGetTag(value) {
     unmasked = true;
   } catch (e) {}
 
-  const result = toString.call(value);
+  var result = toString.call(value);
   if (unmasked) {
     if (isOwn) {
       value[symToStringTag] = tag;
