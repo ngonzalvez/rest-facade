@@ -1,13 +1,15 @@
 var extend = require('util')._extend;
 var url = require('url');
 var changeCase = require('change-case');
+var deepmerge = require('deepmerge');
 
 var request = require('superagent');
 var Promise = require('bluebird');
 var ArgumentError = require('./exceptions').ArgumentError;
 var APIError = require('./exceptions').APIError;
 var defaultOptions = require('./defaultOptions');
-var goToPath = require('./utils');
+var goToPath = require('./utils').goToPath;
+var isFunction = require('./utils').isFunction;
 
 /**
  * @class
@@ -21,8 +23,8 @@ var Client = function (resourceUrl, options) {
     throw new ArgumentError('Missing REST endpoint URL')
   }
 
-  this.options = extend({}, defaultOptions);
-  this.options = extend(this.options, options);
+  this.options = deepmerge(defaultOptions, options || {}, true);
+
   this.url = url.parse(resourceUrl);
 };
 
@@ -234,14 +236,21 @@ Client.prototype.request = function (options, params, callback) {
   var convertCaseParams = paramsCase ? changeCase[paramsCase] : null;
   var convertCaseBody = bodyCase ? changeCase[bodyCase] : null;
   var convertCaseRes = responseCase ? changeCase[responseCase] : null;
+  var reqCustomizer = this.options.request.customizer;
   var newKey = null;
   var value = null;
 
   for (var prevKey in params) {
+    value = params[prevKey];
+
+    if (isFunction(value)) {
+      continue;
+    }
+
     // If the user specified a convertion case (e.g. 'snakeCase') convert the
     // query string params names to the given case.
     newKey = convertCaseParams ? convertCaseParams(prevKey) : prevKey;
-    value = params[prevKey];
+
 
     // If the repeatParams flag is set to false, encode arrays in
     // the querystring as comma separated values.
@@ -275,6 +284,14 @@ Client.prototype.request = function (options, params, callback) {
 
     // Add all the given parameters to the querystring.
     req = req.query(queryParams);
+
+    if (isFunction(reqCustomizer)) {
+      reqCustomizer(req, params);
+    }
+
+    if (isFunction(params._requestCustomizer)) {
+      params._requestCustomizer(req, params);
+    }
 
     // Send the request.
     req

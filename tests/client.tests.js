@@ -600,7 +600,40 @@ module.exports = {
               expect(data.lastName).to.equal('Doe');
               done();
             });
-        }
+        },
+
+      'should allow for a request customizer, that is called for each request, in constructor options':
+        function (done) {
+
+          var options = { request: { customizer : function(req, params) {
+            req.send({alias: 'John Doe'});
+          } }};
+
+          var expected = { first_name: 'Kevin', last_name: 'Spacey', alias: 'John Doe' };
+          var client = this.client = new Client(domain + endpoint, options);
+          var request = nock(domain).post(endpoint, expected).reply(200);
+
+          client.create({ first_name: 'Kevin', last_name: 'Spacey' }, function (err) {
+            expect(request.isDone()).to.be.true;
+            done();
+          });
+        },
+
+      'should call a request customizer function given in params':
+        function (done) {
+          var expected = { first_name: 'John', last_name: 'Doe' };
+          var client = this.client = new Client(domain + endpoint);
+          var request = nock(domain, { reqheaders : {
+              'X-Fake': '1'
+          } }).post(endpoint, expected).reply(200);
+
+          var reqfn = function(req, params) { req.set('X-Fake', '1'); };
+
+          client.create({_requestCustomizer : reqfn}, { first_name: 'John', last_name: 'Doe' }, function (err) {
+            expect(request.isDone()).to.be.true;
+            done();
+          });
+        },
     }
   }
 };
