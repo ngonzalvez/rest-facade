@@ -2,9 +2,10 @@ var util = require('util');
 
 
 var ArgumentError = function(message){
-  Error.captureStackTrace(this, this.constructor);
   this.name = 'ArgumentError';
-  this.message = message;
+  this.message = message || '';
+
+  Error.captureStackTrace(this, this.constructor);
 };
 
 util.inherits(ArgumentError, Error);
