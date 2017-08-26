@@ -17,6 +17,8 @@ module.exports = {
     body: {
       convertCase: null
     }
-  }
+  },
+
+  proxy: null
 };
 

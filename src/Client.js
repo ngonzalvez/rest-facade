@@ -3,6 +3,7 @@ var url = require('url');
 var changeCase = require('change-case');
 var deepmerge = require('deepmerge');
 
+
 var request = require('superagent');
 var Promise = require('bluebird');
 var ArgumentError = require('./exceptions').ArgumentError;
@@ -10,6 +11,9 @@ var APIError = require('./exceptions').APIError;
 var defaultOptions = require('./defaultOptions');
 var goToPath = require('./utils').goToPath;
 var isFunction = require('./utils').isFunction;
+
+// Add proxy support to the request library.
+require('superagent-proxy')(request);
 
 /**
  * @class
@@ -237,6 +241,7 @@ Client.prototype.request = function (options, params, callback) {
   var convertCaseBody = bodyCase ? changeCase[bodyCase] : null;
   var convertCaseRes = responseCase ? changeCase[responseCase] : null;
   var reqCustomizer = this.options.request.customizer;
+  var proxy = this.options.proxy;
   var newKey = null;
   var value = null;
 
@@ -275,7 +280,13 @@ Client.prototype.request = function (options, params, callback) {
     var method = options.method.toLowerCase();
 
     // Set methods and attach the body of the request (if this is a POST request).
-    var req = request[method](options.url).send(options.data);
+    var req = request[method](options.url);
+
+    if (proxy) {
+      req = req.proxy(proxy);
+    }
+
+    req = req.send(options.data);
 
     // Add request headers.
     for (var header in headers) {

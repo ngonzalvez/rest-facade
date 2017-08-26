@@ -38,7 +38,8 @@
   "dependencies": {
     "bluebird": "^2.10.2",
     "change-case": "^2.3.0",
+    "deepmerge": "^1.5.1",
     "superagent": "^3.5.2",
-    "deepmerge": "^1.5.1"
+    "superagent-proxy": "^1.0.2"
   }
 }
