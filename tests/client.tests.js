@@ -9,6 +9,8 @@ var Promise = require('bluebird');
 var Client  = require('../src/Client');
 var ArgumentError = require('../src/exceptions').ArgumentError;
 
+var request = require('superagent');
+
 var domain = 'http://domain.com';
 var endpoint = '/endpoint';
 
@@ -633,6 +635,22 @@ module.exports = {
             expect(request.isDone()).to.be.true;
             done();
           });
+        },
+
+      'should use the proxy defined in the global settings':
+        function (done) {
+          var proxy = 'https://proxyserver.com';
+          var client = this.client = new Client(domain + endpoint, { proxy: proxy });
+          var req = nock(domain).get(endpoint).reply(200);
+
+          var spy = sinon.spy(request.Request.prototype, 'proxy');
+
+          client
+            .getAll()
+            .then(function(data) {
+              expect(request.Request.prototype.proxy.calledWithMatch(proxy)).to.be.true;
+              done();
+            });
         },
     }
   }
