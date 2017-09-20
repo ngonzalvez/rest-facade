@@ -309,6 +309,7 @@ Client.prototype.request = function (options, params, callback) {
       .set('Accept', 'application/json')
       .end(function (err, res) {
         if (err) {
+          var reqinfo = { method : method, url : options.url };
           var response = err.response || {};
           var data = response.body;
           var status = err.status;
@@ -318,9 +319,9 @@ Client.prototype.request = function (options, params, callback) {
               errorFormatter.hasOwnProperty('message')) {
              var name = goToPath(errorFormatter.name, data);
              var message = data ? goToPath(errorFormatter.message, data) : err.message;
-             error = new APIError(name, message, status, err);
+             error = new APIError(name, message, status, reqinfo, err);
           } else {
-            error = new APIError('APIError', data ? JSON.stringify(data) : err.message, status, err);
+            error = new APIError('APIError', data ? JSON.stringify(data) : err.message, status, reqinfo, err);
           }
 
           return reject(error);
