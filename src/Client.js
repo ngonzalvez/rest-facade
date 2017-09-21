@@ -309,18 +309,19 @@ Client.prototype.request = function (options, params, callback) {
       .set('Accept', 'application/json')
       .end(function (err, res) {
         if (err) {
+          var reqinfo = { method : method, url : options.url };
           var response = err.response || {};
-          var data = response.body || {};
+          var data = response.body;
           var status = err.status;
           var error;
 
           if (errorFormatter && errorFormatter.hasOwnProperty('name') &&
               errorFormatter.hasOwnProperty('message')) {
              var name = goToPath(errorFormatter.name, data);
-             var message = goToPath(errorFormatter.message, data);
-             error = new APIError(name, message, status);
+             var message = data ? goToPath(errorFormatter.message, data) : err.message;
+             error = new APIError(name, message, status, reqinfo, err);
           } else {
-            error = new APIError('APIError', JSON.stringify(data), status);
+            error = new APIError('APIError', data ? JSON.stringify(data) : err.message, status, reqinfo, err);
           }
 
           return reject(error);

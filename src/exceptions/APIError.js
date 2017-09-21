@@ -1,10 +1,12 @@
 var util = require('util');
 
 
-var APIError = function(name, message, status){
-  this.name = name || '';
+var APIError = function(name, message, status, requestInfo, originalError){
+  this.name = name || this.constructor.name || this.constructor.prototype.name || '';
   this.message = message || '';
-  this.statusCode = status;
+  this.statusCode = status || (originalError && originalError.code);
+  this.requestInfo = Object.assign({}, requestInfo);
+  this.originalError = originalError;
 
   Error.captureStackTrace(this, this.constructor);
 };

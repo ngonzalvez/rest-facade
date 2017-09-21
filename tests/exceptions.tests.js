@@ -44,7 +44,9 @@ module.exports = {
   'APIError': {
     '#constructor': {
       beforeEach: function() {
-        this.error = new APIError('Unauthorized', 'Invalid token', 401);
+        this.origError = new Error();
+        this.reqinfo = { method : 'post', url : '/some/endpoint' };
+        this.error = new APIError('Unauthorized', 'Invalid token', 401, this.reqinfo, this.origError);
       },
 
       'should be an instance of the builtin Error':
@@ -72,12 +74,23 @@ module.exports = {
           expect(this.error.statusCode).to.eql(401);
         },
 
+      'should have request info':
+        function () {
+          expect((this.error.requestInfo || {}).method).to.eql(this.reqinfo.method);
+          expect((this.error.requestInfo || {}).url).to.eql(this.reqinfo.url);
+        },
+
+      'should have an original error':
+        function () {
+          expect(this.error.originalError).to.eql(this.origError);
+        },
+
       'should have a stack with the message and location the error was created':
         function () {
           expect(this.error.stack).to.exist;
           var stackLines = this.error.stack.split('\n');
           expect(stackLines[0]).to.eql('Unauthorized: Invalid token');
-          expect(stackLines[1]).to.include('tests/exceptions.tests.js:47');
+          expect(stackLines[1]).to.include(__filename);
         }
     }
   }
