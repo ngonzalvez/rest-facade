@@ -119,6 +119,16 @@ Users
   });
 ~~~
 
+or
+
+~~~js
+Users
+  .put({ id: userId }, data)
+  .then(function () {
+    console.log('User updated');
+  });
+~~~
+
 #### PATCH request
 
 ~~~js
@@ -129,7 +139,28 @@ Users
   });
 ~~~
 
-Both functions work exactly the same, the only differenct is the method used to perform the request.
+Both functions work exactly the same, the only difference is the method used to perform the request.
+
+### Plain HTTP requests
+In case you don't want to use the all the fancy abstractions (`create`, `update`, `delete`, `getAll`) you can also send plain HTTP requests using the HTTP method function.
+
+
+~~~js
+// GET request.
+Users.get(qsParams[, cb]);
+
+// POST request.
+Users.post(qsParams, data[, cb]);
+
+// PUT request.
+Users.put(qsParams, data[, cb]);
+
+// PATCH request.
+Users.patch(qsParams, data[, cb]);
+
+// DELETE request.
+Users.delete(qsParams[, cb]);
+~~~
 
 
 ### Callbacks
