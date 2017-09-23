@@ -226,7 +226,7 @@ module.exports = {
           }
     },
 
-    '#create': {
+    '#post': {
       beforeEach:
         function () {
           this.resource = {
@@ -244,13 +244,13 @@ module.exports = {
 
       'should be defined':
         function () {
-          expect(this.client.create).to.exist;
-          expect(this.client.create).to.be.an.instanceOf(Function);
+          expect(this.client.post).to.exist;
+          expect(this.client.post).to.be.an.instanceOf(Function);
         },
 
       'should require a data object as first argument':
         function () {
-          expect(this.client.create)
+          expect(this.client.post)
             .to.throw(ArgumentError, 'Missing data object');
         },
 
@@ -260,14 +260,14 @@ module.exports = {
             name: 'Test resource'
           };
 
-          this.client.create({}, data, function () {
+          this.client.post({}, data, function () {
             done();
           });
         },
 
       'should return a promise when no callback is provided':
         function () {
-          var returnValue = this.client.create({}, { name: 'test' });
+          var returnValue = this.client.post({}, { name: 'test' });
 
           expect(returnValue).to.be.an.instanceOf(Promise);
         },
@@ -278,7 +278,7 @@ module.exports = {
           var request = this.nock;
 
           this.client
-            .create({}, this.resource)
+            .post({}, this.resource)
             .then(function (data) {
               expect(data).to.be.an.instanceOf(Object);
               expect(data.name).to.equal(expectedName);
@@ -293,7 +293,7 @@ module.exports = {
           nock.cleanAll();
           this.nock = nock(domain).post(endpoint).replyWithError();
 
-          this.client.create({}, this.resource, function (err) {
+          this.client.post({}, this.resource, function (err) {
             expect(err).to.exist;
             done();
           });
@@ -305,7 +305,7 @@ module.exports = {
           this.nock = nock(domain).post(endpoint).reply(500);
 
           this.client
-            .create(this.resource)
+            .post(this.resource)
             .catch(function (err) {
               expect(err).to.exist;
               done();
@@ -313,16 +313,27 @@ module.exports = {
         }
     },
 
+    '#create': {
+      'should be defined':
+        function () {
+          expect(this.client.create).to.exist;
+        },
+      'should be an alias for #post':
+        function () {
+          expect(this.client.create).to.equal(this.client.post);
+        },
+    },
+
     '#patch': {
       beforeEach:
         function () {
           this.id = 1;
           this.data = { name: 'Updated' };
-          this.updatedData = extend({ id: this.id }, this.data);
+          this.response = extend({ id: this.id }, this.data);
 
           this.nock = nock(domain)
             .patch(endpoint + '/' + this.id)
-            .reply(200, this.updatedData);
+            .reply(200, this.response);
         },
 
       afterEach:
@@ -364,7 +375,7 @@ module.exports = {
 
       'should pass the body of the response to the resolved promise':
         function (done) {
-          var expectedData = JSON.stringify(this.updatedData);
+          var expectedData = JSON.stringify(this.response);
 
           this.client
             .patch({ id: this.id }, this.data)
@@ -376,7 +387,7 @@ module.exports = {
 
       'should pass the body of the response to the callback':
         function (done) {
-          var expectedData = JSON.stringify(this.updatedData);
+          var expectedData = JSON.stringify(this.response);
 
           this.client.patch({ id: this.id }, this.data, function (err, data) {
             expect(JSON.stringify(data)).to.equal(expectedData);
@@ -409,16 +420,16 @@ module.exports = {
         }
     },
 
-    '#update': {
+    '#put': {
       beforeEach:
         function () {
           this.id = 1;
           this.data = { name: 'Updated' };
-          this.updatedData = extend({ id: this.id }, this.data);
+          this.response = extend({ id: this.id }, this.data);
 
           this.nock = nock(domain)
             .put(endpoint + '/' + this.id)
-            .reply(200, this.updatedData);
+            .reply(200, this.response);
         },
 
       afterEach:
@@ -428,19 +439,19 @@ module.exports = {
 
       'should be defined':
         function () {
-          expect(this.client.update).to.exist;
+          expect(this.client.put).to.exist;
         },
 
       'should accept a callback':
         function (done) {
-          this.client.update({ id: 1 }, {}, function () {
+          this.client.put({ id: 1 }, {}, function () {
             done();
           });
         },
 
       'should require an object as second argument':
         function () {
-          var updateWithoutData = this.client.update.bind(this.client, { id: this.id });
+          var updateWithoutData = this.client.put.bind(this.client, { id: this.id });
 
           expect(updateWithoutData).to.throw(ArgumentError, 'The data must be an object');
         },
@@ -450,7 +461,7 @@ module.exports = {
           var request = this.nock;
 
           this.client
-            .update({ id: this.id }, this.data)
+            .put({ id: this.id }, this.data)
             .then(function () {
               expect(request.isDone()).to.be.true;
               done();
@@ -460,10 +471,10 @@ module.exports = {
 
       'should pass the body of the response to the resolved promise':
         function (done) {
-          var expectedData = JSON.stringify(this.updatedData);
+          var expectedData = JSON.stringify(this.response);
 
           this.client
-            .update({ id: this.id }, this.data)
+            .put({ id: this.id }, this.data)
             .then(function (data) {
               expect(JSON.stringify(data)).to.equal(expectedData);
               done();
@@ -472,9 +483,9 @@ module.exports = {
 
       'should pass the body of the response to the callback':
         function (done) {
-          var expectedData = JSON.stringify(this.updatedData);
+          var expectedData = JSON.stringify(this.response);
 
-          this.client.update({ id: this.id }, this.data, function (err, data) {
+          this.client.put({ id: this.id }, this.data, function (err, data) {
             expect(JSON.stringify(data)).to.equal(expectedData);
             done();
           });
@@ -486,7 +497,7 @@ module.exports = {
           this.nock = nock(domain).post(endpoint + '/' + this.id).reply(500);
 
           this.client
-            .update({ id: this.id }, this.data)
+            .put({ id: this.id }, this.data)
             .catch(function (err) {
               expect(err).to.exist;
               done();
@@ -498,11 +509,22 @@ module.exports = {
           nock.cleanAll();
           this.nock = nock(domain).post(endpoint + '/' + this.id).reply(500);
 
-          this.client.update({ id: this.id }, this.data, function (err) {
+          this.client.put({ id: this.id }, this.data, function (err) {
             expect(err).to.exist;
             done();
           });
         }
+    },
+
+    '#update': {
+      'should be defined':
+        function () {
+          expect(this.client.update).to.exist;
+        },
+      'should be an alias for #put':
+        function () {
+          expect(this.client.update).to.equal(this.client.put);
+        },
     },
 
     '#delete': {
