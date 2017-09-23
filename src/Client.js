@@ -84,34 +84,34 @@ Client.prototype.get = function (params, callback) {
 };
 
 /**
- * Send a request to create a new resource.
+ * Send a POST request.
  *
  * @param   {Object}    params  URL params or query string params.
- * @param   {Object}    data    The data for the new resource.
- * @return  {Promise}           Resolves to the just created object.
+ * @param   {Object}    data    The data to be included in the body.
+ * @return  {Promise}           Resolves to the response body.
  */
-Client.prototype.create = function (/* [params,] data, callback */) {
+Client.prototype.post = function (/* [params,] data, callback */) {
   var params = {};
   var data = {};
   var callback = null;
 
-  // Signature create(params, data, callback).
+  // Signature post(params, data, callback).
   if (arguments.length === 3) {
     params = arguments[0];
     data = arguments[1];
     callback = arguments[2];
 
-  // Signature create(data, callback).
+  // Signature post(data, callback).
   } else if (arguments.length === 2 && arguments[1] instanceof Function) {
     data = arguments[0];
     callback = arguments[1];
 
-  // Signature create(params, data).
+  // Signature post(params, data).
   } else if (arguments.length === 2) {
     params = arguments[0];
     data = arguments[1];
 
-  // Signature create(data).
+  // Signature post(data).
   } else {
     data = arguments[0];
   }
@@ -131,6 +131,17 @@ Client.prototype.create = function (/* [params,] data, callback */) {
 
   return this.request(options, params, callback);
 };
+
+/**
+ * Send a request to create a new resource.
+ *
+ * This method is just an alias for Client#post() method.
+ *
+ * @param   {Object}    params  URL params or query string params.
+ * @param   {Object}    data    The data for the new resource.
+ * @return  {Promise}           Resolves to the just created object.
+ */
+Client.prototype.create = Client.prototype.post;
 
 /**
  * Update an existing resource by its ID.
@@ -158,16 +169,14 @@ Client.prototype.patch = function (params, data, callback) {
 };
 
 /**
- * Update an existing resource by its ID. Using the method PUT, because of
- * semantic use, this function should be used instead of the simple one: patch,
- * to perform a complete replacement of the element
+ * Send a PUT request.
  *
- * @param   {Object}    params      Object containing URL resource params.
- * @param   {Object}    data        The new data.
+ * @param   {Object}    params      Object containing querystring params.
+ * @param   {Object}    data        The data to be sent in the body of the req.
  * @param   {Function}  [callback]  Callback function.
- * @return  {Promise}               Resolves to the updated resource.
+ * @return  {Promise}               Resolves to the response body.
  */
-Client.prototype.update = function (params, data, callback) {
+Client.prototype.put = function (params, data, callback) {
   // Prevent the getURL function from modifying this object.
   params = extend({}, params) || {};
 
@@ -183,6 +192,20 @@ Client.prototype.update = function (params, data, callback) {
 
   return this.request(options, params, callback);
 };
+
+/**
+ * Update an existing resource by its ID. Using the method PUT, because of
+ * semantic use, this function should be used instead of the simple one: patch,
+ * to perform a complete replacement of the element
+ *
+ * This function is just an alias for Client#put() method.
+ *
+ * @param   {Object}    params      Object containing URL resource params.
+ * @param   {Object}    data        The new data.
+ * @param   {Function}  [callback]  Callback function.
+ * @return  {Promise}               Resolves to the updated resource.
+ */
+Client.prototype.update = Client.prototype.put;
 
 /**
  * Delete a resource by its ID.
