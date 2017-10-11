@@ -159,7 +159,7 @@ Users.put(qsParams, data[, cb]);
 Users.patch(qsParams, data[, cb]);
 
 // DELETE request.
-Users.delete(qsParams[, cb]);
+Users.delete(qsParams[, data, cb]);
 ~~~
 
 
