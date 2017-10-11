@@ -222,7 +222,7 @@ Client.prototype.delete = function (/* [urlParams], [callback] */) {
   // Signature delete(urlParams, body, callback).
   if (arguments.length === 3) {
     params = arguments[0];
-    body = arguments[1]
+    body = arguments[1];
     callback = arguments[2];
 
   // Signature delete(urlParams, callback).
