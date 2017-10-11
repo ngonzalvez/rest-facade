@@ -364,7 +364,7 @@ Client.prototype.request = function (options, params, callback) {
           }
         }
 
-        resolve(res.body);
+        resolve(res.body, res.header);
       });
   });
 

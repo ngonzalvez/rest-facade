@@ -173,6 +173,25 @@ Users.getAll(function (err, users) {
 });
 ~~~
 
+
+### Response headers
+
+~~~js
+Users.getAll(function (err, body, headers) {
+  // ...
+});
+
+
+Users
+  .getAll()
+  .then(function (body, headers) {
+    // ...
+  })
+  .catch(function (err) {
+    // ...
+  });
+~~~
+
 ### Query String
 
 All methods accept an object with URL params as first argument. The properties in this object will be used to format the URL as shown above. However, the properties defined in this object, but not in the endpoint URL, will be added as query string params.
