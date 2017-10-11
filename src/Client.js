@@ -216,12 +216,24 @@ Client.prototype.update = Client.prototype.put;
  */
 Client.prototype.delete = function (/* [urlParams], [callback] */) {
   var callback = null;
+  var body = {};
   var params = {};
 
+  // Signature delete(urlParams, body, callback).
+  if (arguments.length === 3) {
+    params = arguments[0];
+    body = arguments[1];
+    callback = arguments[2];
+
   // Signature delete(urlParams, callback).
-  if (arguments.length === 2) {
+  } else if (arguments.length === 2 && arguments[1] instanceof Function) {
     params = arguments[0];
     callback = arguments[1];
+
+  // Signature deletee(urlParams, body).
+  } else if (arguments.length === 2) {
+    params = arguments[0];
+    body = arguments[1];
 
   // Signature delete(callback).
   } else if (arguments.length === 1 && arguments[0] instanceof Function) {
@@ -237,6 +249,7 @@ Client.prototype.delete = function (/* [urlParams], [callback] */) {
 
   var options = {
     method: 'DEL',
+    data: body,
     url: this.getURL(params)
   };
 
