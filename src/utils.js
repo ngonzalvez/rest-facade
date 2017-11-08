@@ -30,7 +30,7 @@ function resolveAPIErrorArg(formatter, data, defaults)
         val = formatter(data);
         break;
       case 'string':
-        val = get(formatter, data);
+        val = get(data, formatter);
         break;
     }
   }
