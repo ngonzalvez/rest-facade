@@ -332,54 +332,85 @@ Client.prototype.request = function (options, params, callback) {
     // Add all the given parameters to the querystring.
     req = req.query(queryParams);
 
+    // Run request customizer (from constructor options)
     if (isFunction(reqCustomizer)) {
-      reqCustomizer(req, params);
+      if (reqCustomizer.length === 3) { // check if callback has been defined
+        reqCustomizer(req, params, runParamsRequestCustomizer);
+      } else {
+        // if no callback (run synchronously)
+        reqCustomizer(req, params);
+        runParamsRequestCustomizer();  
+      }
+    } else {
+      runParamsRequestCustomizer();
     }
 
-    if (isFunction(params._requestCustomizer)) {
-      params._requestCustomizer(req, params);
+    // Run request customizer (from request params)
+    function runParamsRequestCustomizer(err) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (isFunction(params._requestCustomizer)) {
+        if (params._requestCustomizer.length === 3) { // check if callback has been defined
+          params._requestCustomizer(req, params, sendRequest);
+        } else {
+          // if no callback (run synchronously)
+          params._requestCustomizer(req, params);
+          sendRequest();
+        }
+      } else {
+        sendRequest();
+      }
     }
 
-    // Send the request.
-    req
-      .set('Accept', 'application/json')
-      .end(function (err, res) {
-        if (err) {
-          var reqinfo = { method : method, url : options.url };
-          var response = err.response || {};
-          var data = response.body;
-          var status = err.status;
-          var error;
+    // send the request
+    function sendRequest(err) {
+      if (err) {
+        return reject(err);
+      }
 
-          if (errorFormatter && errorFormatter.hasOwnProperty('name') &&
-              errorFormatter.hasOwnProperty('message')) {
-             var name = goToPath(errorFormatter.name, data);
-             var message = data ? goToPath(errorFormatter.message, data) : err.message;
-             error = new APIError(name, message, status, reqinfo, err);
-          } else {
-            error = new APIError('APIError', data ? JSON.stringify(data) : err.message, status, reqinfo, err);
+      // Send the request.
+      req
+        .set('Accept', 'application/json')
+        .end(function (err, res) {
+          if (err) {
+            var reqinfo = { method : method, url : options.url };
+            var response = err.response || {};
+            var data = response.body;
+            var status = err.status;
+            var error;
+
+            if (errorFormatter && errorFormatter.hasOwnProperty('name') &&
+                errorFormatter.hasOwnProperty('message')) {
+              var name = goToPath(errorFormatter.name, data);
+              var message = data ? goToPath(errorFormatter.message, data) : err.message;
+              error = new APIError(name, message, status, reqinfo, err);
+            } else {
+              error = new APIError('APIError', data ? JSON.stringify(data) : err.message, status, reqinfo, err);
+            }
+
+            return reject(error);
           }
 
-          return reject(error);
-        }
+          // If case conversion is enabled for the body of the response, convert
+          // the properties of the body to the specified case.
+          if (convertCaseRes) {
+            for (var key in res.body) {
+              if (res.body.hasOwnProperty(key)) {
+                res.body[convertCaseRes(key)] = res.body[key];
 
-        // If case conversion is enabled for the body of the response, convert
-        // the properties of the body to the specified case.
-        if (convertCaseRes) {
-          for (var key in res.body) {
-            if (res.body.hasOwnProperty(key)) {
-              res.body[convertCaseRes(key)] = res.body[key];
-
-              if (key !== convertCaseRes(key)) {
-                delete res.body[key];
+                if (key !== convertCaseRes(key)) {
+                  delete res.body[key];
+                }
               }
             }
           }
-        }
 
-        resolve(res.body, res.header);
-      });
-  });
+          resolve(res.body, res.header);
+        });
+      }
+    });
 
   if (!callback) return promise;
 
