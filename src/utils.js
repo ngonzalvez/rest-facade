@@ -3,24 +3,47 @@ var hasOwnProperty = objectProto.hasOwnProperty;
 var toString = objectProto.toString;
 var symToStringTag = typeof Symbol != 'undefined' ? Symbol.toStringTag : undefined;
 
+var get = require('lodash.get');
+
 /*
-* Auxiliar function for get the error attributes
-* from the given path.
+* Auxiliar function for extracting an APIError argument from the
+* given `data` using the given "formatter"
+*
+* @param {String|Function|undefined)  formatter  - either a string used to "get" the property-path,
+*                                                  or a custom function (data is passed to it)
+* @param {Object|null}                data       - a data object, assumed to be the response body
+* @param {mixed|Array[mixed])         defaults   - a default value, or an array of defaults values.
+*                                                  used if no value could be extracted from `data` using the `formatter`
+*                                                  (e.g. if data is empty or the formatter is undefined),
+*                                                  in the case of multiple defaults the first TRUTHY value is used.
+*
+* @return {String}
 */
-function goToPath(path, obj) {
-  var current = obj;
-  var keys = path.split('.');
-  var currentKey;
+function resolveAPIErrorArg(formatter, data, defaults)
+{
+  var val, def;
+  var defs = Array.isArray(defaults) ? defaults : [defaults];
 
-  while (currentKey = keys.shift()) {
-    if (typeof current === 'object' &&
-      current.hasOwnProperty(currentKey)) {
-        current = current[currentKey];
-      }
+  if (formatter && data) {
+    switch (typeof formatter) {
+      case 'function':
+        val = formatter(data);
+        break;
+      case 'string':
+        val = get(data, formatter);
+        break;
+    }
   }
-  return current;
-};
 
+  while (!val && defs.length) {
+    val = defs.shift();
+  }
+
+  if (val && (typeof val === 'object'))
+    val = JSON.stringify(val);
+
+  return (val || '') + '';
+}
 
 /**
  * N.B. baseGetTag(), isObject() & isFunction() are lifted straight out of Lodash,
@@ -81,7 +104,7 @@ function isFunction(value) {
 }
 
 module.exports = {
-  goToPath : goToPath,
+  resolveAPIErrorArg : resolveAPIErrorArg,
   isObject : isObject,
   isFunction : isFunction
 };

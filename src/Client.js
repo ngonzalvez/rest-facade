@@ -9,7 +9,7 @@ var Promise = require('bluebird');
 var ArgumentError = require('./exceptions').ArgumentError;
 var APIError = require('./exceptions').APIError;
 var defaultOptions = require('./defaultOptions');
-var goToPath = require('./utils').goToPath;
+var resolveAPIErrorArg = require('./utils').resolveAPIErrorArg;
 var isFunction = require('./utils').isFunction;
 
 // Add proxy support to the request library.
@@ -268,7 +268,7 @@ Client.prototype.delete = function (/* [urlParams], [callback] */) {
  */
 Client.prototype.request = function (options, params, callback) {
   var headers = this.options.headers || {};
-  var errorFormatter = this.options.errorFormatter || null;
+  var errorFormatter = this.options.errorFormatter || {};
   var paramsCase = this.options.query.convertCase;
   var bodyCase = this.options.request.body.convertCase;
   var responseCase = this.options.response.body.convertCase;
@@ -351,16 +351,10 @@ Client.prototype.request = function (options, params, callback) {
           var status = err.status;
           var error;
 
-          if (errorFormatter && errorFormatter.hasOwnProperty('name') &&
-              errorFormatter.hasOwnProperty('message')) {
-             var name = goToPath(errorFormatter.name, data);
-             var message = data ? goToPath(errorFormatter.message, data) : err.message;
-             error = new APIError(name, message, status, reqinfo, err);
-          } else {
-            error = new APIError('APIError', data ? JSON.stringify(data) : err.message, status, reqinfo, err);
-          }
+          var name = resolveAPIErrorArg(errorFormatter.name, data, 'APIError');
+          var message = resolveAPIErrorArg(errorFormatter.message, data, [data, err.message]);
 
-          return reject(error);
+          return reject(new APIError(name, message, status, reqinfo, err))
         }
 
         // If case conversion is enabled for the body of the response, convert
