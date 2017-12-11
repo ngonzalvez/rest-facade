@@ -16,6 +16,41 @@ var isFunction = require('./utils').isFunction;
 require('superagent-proxy')(request);
 
 /**
+ * validate request body input/data
+ *
+ * @param  {mixed}    data
+ * @param  {Boolean}  allow_empty - if TRUE empty/unset values will not be seen as invalid
+ * @return {void}
+ * @throws {ArgumentError}        - thrown if `data` is invalid
+ */
+function checkReqBodyData(data, allow_empty)
+{
+  var okay = true;
+
+  if (!data) {
+    okay = allow_empty ? true : false;
+  } else {
+    switch (typeof data) {
+      case 'object':
+        // TODO: should we check to see whether the data object has any keys?
+        break;
+
+      case 'string':
+        if (!data.length)
+          okay = false;
+        break;
+
+      default:
+        okay = false;
+        break;
+    }
+  }
+
+  if (!okay)
+    throw new ArgumentError('Missing/invalid request body data');
+}
+
+/**
  * @class
  * Facade pattern for REST API endpoint consumption.
  * @constructor
@@ -116,9 +151,7 @@ Client.prototype.post = function (/* [params,] data, callback */) {
     data = arguments[0];
   }
 
-  if (typeof data !== 'object') {
-    throw new ArgumentError('Missing data object');
-  }
+  checkReqBodyData(data);
 
   // Prevent the getURL function from modifying this object.
   params = extend({}, params);
@@ -155,9 +188,7 @@ Client.prototype.patch = function (params, data, callback) {
   // Prevent the getURL function from modifying this object.
   params = extend({}, params) || {};
 
-  if (typeof data !== 'object') {
-    throw new ArgumentError('The data must be an object');
-  }
+  checkReqBodyData(data);
 
   var options = {
     method: 'PATCH',
@@ -180,9 +211,7 @@ Client.prototype.put = function (params, data, callback) {
   // Prevent the getURL function from modifying this object.
   params = extend({}, params) || {};
 
-  if (typeof data !== 'object') {
-    throw new ArgumentError('The data must be an object');
-  }
+  checkReqBodyData(data);
 
   var options = {
     method: 'PUT',
@@ -247,6 +276,8 @@ Client.prototype.delete = function (/* [urlParams], [callback] */) {
   // Prevent the getURL function from modifying this object.
   params = extend({}, params);
 
+  checkReqBodyData(body, true);
+
   var options = {
     method: 'DEL',
     data: body,
@@ -303,7 +334,7 @@ Client.prototype.request = function (options, params, callback) {
     queryParams[newKey] = value;
   }
 
-  if (convertCaseBody) {
+  if (convertCaseBody && options.data && typeof options.data === 'object') {
     for (var key in options.data) {
       if (options.data.hasOwnProperty(key)) {
         options.data[convertCaseBody(key)] = options.data[key];

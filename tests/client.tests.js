@@ -248,10 +248,10 @@ module.exports = {
           expect(this.client.post).to.be.an.instanceOf(Function);
         },
 
-      'should require a data object as first argument':
+      'should require a data object or string as first argument':
         function () {
           expect(this.client.post)
-            .to.throw(ArgumentError, 'Missing data object');
+            .to.throw(ArgumentError, 'Missing/invalid request body data');
         },
 
       'should allow a callback as second argument':
@@ -353,11 +353,11 @@ module.exports = {
           });
         },
 
-      'should require an object as second argument':
+      'should require an object or string as second argument':
         function () {
           var updateWithoutData = this.client.patch.bind(this.client, { id: this.id });
 
-          expect(updateWithoutData).to.throw(ArgumentError, 'The data must be an object');
+          expect(updateWithoutData).to.throw(ArgumentError, 'Missing/invalid request body data');
         },
 
       'should perform a PATCH /endpoint/:id':
@@ -449,11 +449,11 @@ module.exports = {
           });
         },
 
-      'should require an object as second argument':
+      'should require an object or string as second argument':
         function () {
           var updateWithoutData = this.client.put.bind(this.client, { id: this.id });
 
-          expect(updateWithoutData).to.throw(ArgumentError, 'The data must be an object');
+          expect(updateWithoutData).to.throw(ArgumentError, 'Missing/invalid request body data');
         },
 
       'should perform a PUT /endpoint/:id':
