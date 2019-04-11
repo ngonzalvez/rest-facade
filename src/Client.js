@@ -5,7 +5,6 @@ var deepmerge = require('deepmerge');
 
 
 var request = require('superagent');
-var Promise = require('bluebird');
 var ArgumentError = require('./exceptions').ArgumentError;
 var APIError = require('./exceptions').APIError;
 var defaultOptions = require('./defaultOptions');
@@ -27,7 +26,7 @@ var Client = function (resourceUrl, options) {
     throw new ArgumentError('Missing REST endpoint URL')
   }
 
-  this.options = deepmerge(defaultOptions, options || {}, true);
+  this.options = deepmerge(defaultOptions, options || {});
 
   this.url = url.parse(resourceUrl);
 };

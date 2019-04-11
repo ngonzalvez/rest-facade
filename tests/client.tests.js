@@ -4,7 +4,6 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var nock = require('nock');
 var http = require('http');
-var Promise = require('bluebird');
 
 var Client  = require('../src/Client');
 var ArgumentError = require('../src/exceptions').ArgumentError;
