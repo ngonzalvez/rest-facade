@@ -642,6 +642,28 @@ module.exports = {
           });
         },
 
+      'should allow for an asynchronous request customizer, that is called for each request, in constructor options':
+        function (done) {
+
+          var customizerAsync = function (req, params, cb) {
+            setTimeout(function(){
+              req.send({alias: 'Jane Doe'});
+              return cb(null, req)
+            }, 10);
+          }
+
+          var options = { request: { customizer : customizerAsync }};
+
+          var expected = { first_name: 'Kevin', last_name: 'Spacey', alias: 'Jane Doe' };
+          var client = this.client = new Client(domain + endpoint, options);
+          var request = nock(domain).post(endpoint, expected).reply(200);
+
+          client.create({ first_name: 'Kevin', last_name: 'Spacey' }, function (err) {
+            expect(request.isDone()).to.be.true;
+            done();
+          });
+        },
+
       'should call a request customizer function given in params':
         function (done) {
           var expected = { first_name: 'John', last_name: 'Doe' };
@@ -653,6 +675,29 @@ module.exports = {
           var reqfn = function(req, params) { req.set('X-Fake', '1'); };
 
           client.create({_requestCustomizer : reqfn}, { first_name: 'John', last_name: 'Doe' }, function (err) {
+            expect(request.isDone()).to.be.true;
+            done();
+          });
+        },
+
+      'should call an asynchronous request customizer function given in params':
+        function (done) {
+          var customizerAsync = function (req, params, cb) {
+            setTimeout(function(){
+              req.set('X-Fake', '1');
+              return cb(null, req)
+            }, 10);
+          }
+
+          var expected = { first_name: 'John', last_name: 'Doe' };
+          var client = this.client = new Client(domain + endpoint);
+          var request = nock(domain, { reqheaders : {
+              'X-Fake': '1'
+          } }).post(endpoint, expected).reply(200);
+
+          var reqfn = function(req, params) { req.set('X-Fake', '1'); };
+
+          client.create({_requestCustomizer : customizerAsync}, { first_name: 'John', last_name: 'Doe' }, function (err) {
             expect(request.isDone()).to.be.true;
             done();
           });

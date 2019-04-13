@@ -270,6 +270,19 @@ You can define both, in which case both will be applied (in the order listed abo
 
 In each case the function is passed the `req` and `params` representing the API call in question.
 
+Request customizer functions may be asynchronous. If you require an asynchronous customizer function, use a callback. For example:
+
+```js
+customizer(req, params, cb) {
+  someAsynchronousFunction
+    .then((resultOfYourFunction) => {
+      req.set('Authorization', `Bearer ${resultOfYourFunction}`);
+      return cb();
+    })
+    .catch(err => cb(err));
+},
+```
+
 ### Proxy support
 
 If a proxy URI is provided, **all** requests will be sent through that proxy.
