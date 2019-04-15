@@ -26,7 +26,7 @@ var Client = function (resourceUrl, options) {
     throw new ArgumentError('Missing REST endpoint URL')
   }
 
-  this.options = deepmerge(defaultOptions, options || {});
+  this.options = deepmerge(defaultOptions, options || {}, { clone: false });
 
   this.url = url.parse(resourceUrl);
 };
