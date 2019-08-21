@@ -642,6 +642,32 @@ module.exports = {
           });
         },
 
+        'should allow for an error customizer, that is called for each request, in constructor options':
+          function (done) {
+            nock.cleanAll();
+
+            var options = {
+              errorCustomizer: function(name, message, status, requestInfo, originalError){
+                this.name = name;
+                this.message = message;
+                this.statusCode = status;
+                this.requestInfo = requestInfo;
+                this.originalError = originalError;
+              }
+            };
+
+            var client = this.client = new Client(domain + endpoint, options);
+            var req = nock(domain).post(endpoint).replyWithError();
+
+            client
+            .get()
+            .catch(function (err) {
+              expect(err).to.exist;
+              expect(err).to.be.an.instanceOf(options.errorCustomizer);
+              done();
+            });
+          },
+
       'should allow for an asynchronous request customizer, that is called for each request, in constructor options':
         function (done) {
 

@@ -268,6 +268,7 @@ Client.prototype.delete = function (/* [urlParams], [callback] */) {
 Client.prototype.request = function (options, params, callback) {
   var headers = this.options.headers || {};
   var errorFormatter = this.options.errorFormatter || {};
+  var errorConstructor = this.options.errorCustomizer || APIError;
   var paramsCase = this.options.query.convertCase;
   var bodyCase = this.options.request.body.convertCase;
   var responseCase = this.options.response.body.convertCase;
@@ -338,7 +339,7 @@ Client.prototype.request = function (options, params, callback) {
       } else {
         // if no callback (run synchronously)
         reqCustomizer(req, params);
-        runParamsRequestCustomizer();  
+        runParamsRequestCustomizer();
       }
     } else {
       runParamsRequestCustomizer();
@@ -383,7 +384,7 @@ Client.prototype.request = function (options, params, callback) {
             var name = resolveAPIErrorArg(errorFormatter.name, data, 'APIError');
             var message = resolveAPIErrorArg(errorFormatter.message, data, [data, err.message]);
   
-            return reject(new APIError(name, message, status, reqinfo, err))
+            return reject(new errorConstructor(name, message, status, reqinfo, err));
           }
 
           // If case conversion is enabled for the body of the response, convert
