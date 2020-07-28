@@ -285,6 +285,12 @@ customizer(req, params, cb) {
 
 ### Proxy support
 
+Rest-facade has `superagent-proxy` as [peer dependency](https://docs.npmjs.com/files/package.json#peerdependencies) to add proxy support. To use a proxy, you must first install the peer dependency.
+
+```
+npm install superagent-proxy
+```
+
 If a proxy URI is provided, **all** requests will be sent through that proxy.
 
 ```js
