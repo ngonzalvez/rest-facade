@@ -11,9 +11,6 @@ var defaultOptions = require('./defaultOptions');
 var resolveAPIErrorArg = require('./utils').resolveAPIErrorArg;
 var isFunction = require('./utils').isFunction;
 
-// Add proxy support to the request library.
-require('superagent-proxy')(request);
-
 /**
  * @class
  * Facade pattern for REST API endpoint consumption.
@@ -29,6 +26,11 @@ var Client = function (resourceUrl, options) {
   this.options = deepmerge(defaultOptions, options || {}, { clone: false });
 
   this.url = url.parse(resourceUrl);
+  
+  if (this.options.proxy) {
+    // Add proxy support to the request library.
+    require('superagent-proxy')(request);
+  }
 };
 
 
