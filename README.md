@@ -293,3 +293,13 @@ var client = new rest.Client(url, {
   proxy: 'https://myproxy.com:1234'
 });
 ```
+
+### Persistent Connections (Keep-alive)
+
+By default, persistent connection are not enabled. To enabled it, use the option:
+
+```js
+var client = new rest.Client(url, {
+  keepAlive: true
+});
+```
