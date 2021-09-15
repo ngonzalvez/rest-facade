@@ -41,6 +41,6 @@
     "deepmerge": "^3.2.0",
     "lodash.get": "^4.4.2",
     "superagent": "^5.1.1",
-    "superagent-proxy": "^2.0.0"
+    "superagent-proxy": "^3.0.0"
   }
 }
