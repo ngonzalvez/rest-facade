@@ -8,8 +8,10 @@ var APIError = function(name, message, status, requestInfo, originalError){
   this.requestInfo = Object.assign({}, requestInfo);
   this.originalError = originalError;
 
-  if (typeof Error.captureStackTrace === 'funciton') {
-    Error.captureStackTrace(this, this.constructor);
+  if (typeof Error.captureStackTrace === 'function') {
+    Error.captureStackTrace(this, this.constructor);  // Node.js.
+  } else {
+    this.stack = new Error().stack;  // Browser.
   }
 };
 
