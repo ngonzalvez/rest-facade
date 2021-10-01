@@ -140,9 +140,13 @@ module.exports = {
       beforeEach:
         function () {
           this.data = { name: 'Test' };
+          this.headers = {
+            'x-header-test': 'OK',
+            'x-random-header': Math.random().toFixed(5),
+          };
           this.successReq = nock(domain)
             .get(endpoint + '/OK')
-            .reply(200, this.data);
+            .reply(200, this.data, this.headers);
           this.errorReq = nock(domain)
             .get(endpoint + '/FAIL')
             .replyWithError({name: 'Unauthorized', message: 'Invalid token'});
@@ -222,7 +226,24 @@ module.exports = {
               expect(err).to.exist;
               done();
             });
-          }
+          },
+      'should pass the headers to the callback': 
+        function (done) {
+          var expectedHeaders = this.headers;
+
+          this.client.get({ id: 'OK' }, function(err, body, headers) {
+            expect(headers).to.exist;
+
+            for (var key in expectedHeaders) {
+              if (expectedHeaders.hasOwnProperty(key)) {
+                expect(headers).to.have.property(key);
+                expect(headers[key]).to.equal(expectedHeaders[key]);
+              }
+            }
+
+            done();
+          })
+        },
     },
 
     '#post': {
@@ -290,7 +311,7 @@ module.exports = {
       'should pass any errors to the callback function':
         function (done) {
           nock.cleanAll();
-          this.nock = nock(domain).post(endpoint).replyWithError();
+          this.nock = nock(domain).post(endpoint).reply(500);
 
           this.client.post({}, this.resource, function (err) {
             expect(err).to.exist;

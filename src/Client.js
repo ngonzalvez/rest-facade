@@ -383,7 +383,7 @@ Client.prototype.request = function (options, params, callback) {
     // send the request
     function sendRequest(err) {
       if (err) {
-        return reject(err);
+        return callback ? callback(err) : reject(err);
       }
 
       // Send the request.
@@ -399,8 +399,9 @@ Client.prototype.request = function (options, params, callback) {
 
             var name = resolveAPIErrorArg(errorFormatter.name, data, 'APIError');
             var message = resolveAPIErrorArg(errorFormatter.message, data, [data, err.message]);
+            var error = new errorConstructor(name, message, status, reqinfo, err);
 
-            return reject(new errorConstructor(name, message, status, reqinfo, err));
+            return callback ? callback(error) : reject(error);
           }
 
           // If case conversion is enabled for the body of the response, convert
@@ -417,16 +418,13 @@ Client.prototype.request = function (options, params, callback) {
             }
           }
 
-          resolve(res.body, res.header);
+          if (callback) callback(null, res.body, res.headers);
+          else resolve(res.body, res.header);
         });
       }
     });
 
   if (!callback) return promise;
-
-  promise
-    .then(callback.bind(null, null))
-    .catch(callback);
 };
 
 /**
