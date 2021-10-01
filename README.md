@@ -309,3 +309,15 @@ var client = new rest.Client(url, {
   keepAlive: true
 });
 ```
+
+### Specifying the type of the request body
+By default the request body type is 'json' but you can specify a custom type as follows:
+```js
+var client = new rest.Client(url, {
+  request: { 
+    type: 'form'
+  }
+});
+```
+
+Valid values are: **json** and **form**.
