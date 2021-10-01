@@ -180,16 +180,6 @@ Users.getAll(function (err, users) {
 Users.getAll(function (err, body, headers) {
   // ...
 });
-
-
-Users
-  .getAll()
-  .then(function (body, headers) {
-    // ...
-  })
-  .catch(function (err) {
-    // ...
-  });
 ~~~
 
 ### Query String
