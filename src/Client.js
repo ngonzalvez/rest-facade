@@ -422,7 +422,7 @@ Client.prototype.request = function (options, params, callback) {
           }
 
           if (callback) callback(null, res.body, res.headers);
-          else resolve(res.body, res.header);
+          else resolve(res.body);
         });
       }
     });
