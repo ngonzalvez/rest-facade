@@ -741,6 +741,7 @@ module.exports = {
             .getAll()
             .then(function(data) {
               expect(request.Request.prototype.proxy.calledWithMatch(proxy)).to.be.true;
+              request.Request.prototype.proxy.restore();
               done();
             });
         },
@@ -758,6 +759,7 @@ module.exports = {
             .then(function() {
               expect(request.Request.prototype.agent.calledOnce).to.be.true;
               expect(nockRequest.isDone()).to.be.true;
+              request.Request.prototype.agent.restore();
               done();
             });
         },
