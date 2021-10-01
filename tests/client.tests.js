@@ -808,17 +808,18 @@ module.exports = {
           expect(formRequest.isDone()).to.be.true;
           done();
         },
-    },
-    'allow serialized request data': 
-      function(done) {
-        var expected = { firstName: 'John', lastName: 'Doe' };
-        var client = new Client(domain + endpoint);
-        var request = nock(domain).post(endpoint, expected).reply(200);
 
-        client.post(JSON.stringify(expected), function () {
-          expect(request.isDone()).to.be.true;
-          done();
-        });
-      },
+      'should allow serialized request data': 
+        function(done) {
+          var expected = { firstName: 'John', lastName: 'Doe' };
+          var client = new Client(domain + endpoint);
+          var request = nock(domain).post(endpoint, expected).reply(200);
+
+          client.post(JSON.stringify(expected), function () {
+            expect(request.isDone()).to.be.true;
+            done();
+          });
+        },
+    },
   }
 };
