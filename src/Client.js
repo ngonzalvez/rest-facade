@@ -14,6 +14,12 @@ var isFunction = require('./utils').isFunction;
 // Add proxy support to the request library.
 require('superagent-proxy')(request);
 
+const HttpsAgent = require('https').Agent;
+const keepAliveAgent = new HttpsAgent({
+  keepAlive: true,
+});
+
+
 /**
  * @class
  * Facade pattern for REST API endpoint consumption.
@@ -280,6 +286,7 @@ Client.prototype.request = function (options, params, callback) {
   var proxy = this.options.proxy;
   var newKey = null;
   var value = null;
+  var useKeepAlive = this.options.keepAlive;
 
   for (var prevKey in params) {
     value = params[prevKey];
@@ -320,6 +327,10 @@ Client.prototype.request = function (options, params, callback) {
 
     if (proxy) {
       req = req.proxy(proxy);
+    }
+
+    if (useKeepAlive) {
+      req = req.agent(keepAliveAgent);
     }
 
     req = req.send(options.data);
@@ -380,10 +391,10 @@ Client.prototype.request = function (options, params, callback) {
             var data = response.body;
             var status = err.status;
             var error;
-  
+
             var name = resolveAPIErrorArg(errorFormatter.name, data, 'APIError');
             var message = resolveAPIErrorArg(errorFormatter.message, data, [data, err.message]);
-  
+
             return reject(new errorConstructor(name, message, status, reqinfo, err));
           }
 
