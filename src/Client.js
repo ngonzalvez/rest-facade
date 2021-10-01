@@ -126,8 +126,8 @@ Client.prototype.post = function (/* [params,] data, callback */) {
     data = arguments[0];
   }
 
-  if (typeof data !== 'object') {
-    throw new ArgumentError('Missing data object');
+  if (typeof data !== 'object' && typeof data !== 'string') {
+    throw new ArgumentError('The data must be an object or a serialized json');
   }
 
   // Prevent the getURL function from modifying this object.
@@ -165,8 +165,8 @@ Client.prototype.patch = function (params, data, callback) {
   // Prevent the getURL function from modifying this object.
   params = extend({}, params) || {};
 
-  if (typeof data !== 'object') {
-    throw new ArgumentError('The data must be an object');
+  if (typeof data !== 'object' && typeof data !== 'string') {
+    throw new ArgumentError('The data must be an object or a serialized json');
   }
 
   var options = {
@@ -190,8 +190,8 @@ Client.prototype.put = function (params, data, callback) {
   // Prevent the getURL function from modifying this object.
   params = extend({}, params) || {};
 
-  if (typeof data !== 'object') {
-    throw new ArgumentError('The data must be an object');
+  if (typeof data !== 'object' && typeof data !== 'string') {
+    throw new ArgumentError('The data must be an object or a serialized json');
   }
 
   var options = {
@@ -283,6 +283,7 @@ Client.prototype.request = function (options, params, callback) {
   var paramsCase = this.options.query.convertCase;
   var bodyCase = this.options.request.body.convertCase;
   var responseCase = this.options.response.body.convertCase;
+  var reqType = this.options.request.type || 'json';
   var queryParams = {};
   var convertCaseParams = paramsCase ? changeCase[paramsCase] : null;
   var convertCaseBody = bodyCase ? changeCase[bodyCase] : null;
@@ -315,7 +316,7 @@ Client.prototype.request = function (options, params, callback) {
     queryParams[newKey] = value;
   }
 
-  if (convertCaseBody) {
+  if (convertCaseBody && typeof options.data === 'object') {
     for (var key in options.data) {
       if (options.data.hasOwnProperty(key)) {
         options.data[convertCaseBody(key)] = options.data[key];
@@ -329,6 +330,8 @@ Client.prototype.request = function (options, params, callback) {
 
     // Set methods and attach the body of the request (if this is a POST request).
     var req = request[method](options.url);
+
+    req = req.type(reqType);
 
     if (proxy) {
       req = req.proxy(proxy);

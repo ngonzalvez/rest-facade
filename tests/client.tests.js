@@ -32,8 +32,9 @@ module.exports = {
           var client = Client.bind(null, 'http://domain.com/endpoint/:id');
 
           expect(client).to.not.throw(ArgumentError);
-        }
+        },
     },
+    
 
     '#getAll': {
       beforeEach:
@@ -271,7 +272,7 @@ module.exports = {
       'should require a data object as first argument':
         function () {
           expect(this.client.post)
-            .to.throw(ArgumentError, 'Missing data object');
+            .to.throw(ArgumentError, 'The data must be an object or a serialized json');
         },
 
       'should allow a callback as second argument':
@@ -377,7 +378,7 @@ module.exports = {
         function () {
           var updateWithoutData = this.client.patch.bind(this.client, { id: this.id });
 
-          expect(updateWithoutData).to.throw(ArgumentError, 'The data must be an object');
+          expect(updateWithoutData).to.throw(ArgumentError, 'The data must be an object or a serialized json');
         },
 
       'should perform a PATCH /endpoint/:id':
@@ -473,7 +474,7 @@ module.exports = {
         function () {
           var updateWithoutData = this.client.put.bind(this.client, { id: this.id });
 
-          expect(updateWithoutData).to.throw(ArgumentError, 'The data must be an object');
+          expect(updateWithoutData).to.throw(ArgumentError, 'The data must be an object or a serialized json');
         },
 
       'should perform a PUT /endpoint/:id':
@@ -784,6 +785,40 @@ module.exports = {
               done();
             });
         },
-    }
+      'should use the request type when defined':
+        async function (done) {
+          // JSON Request type.
+          var jsonClient = new Client(domain + endpoint);
+          var jsonRequest = nock(domain)
+            .matchHeader('content-type', 'application/json')
+            .get(endpoint)
+            .reply(200);
+
+          await jsonClient.get();
+          expect(jsonRequest.isDone()).to.be.true;
+
+          // Form request type.
+          var formClient = new Client(domain + endpoint, { request: { type: 'form' }});
+          var formRequest = nock( domain)
+            .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
+            .get(endpoint)
+            .reply(200);
+          
+          await formClient.get()
+          expect(formRequest.isDone()).to.be.true;
+          done();
+        },
+    },
+    'allow serialized request data': 
+      function(done) {
+        var expected = { firstName: 'John', lastName: 'Doe' };
+        var client = new Client(domain + endpoint);
+        var request = nock(domain).post(endpoint, expected).reply(200);
+
+        client.post(JSON.stringify(expected), function () {
+          expect(request.isDone()).to.be.true;
+          done();
+        });
+      },
   }
 };
