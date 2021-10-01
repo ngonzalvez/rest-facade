@@ -744,6 +744,23 @@ module.exports = {
               done();
             });
         },
+
+      'should use persistent connections when it is enabled on the constructor options':
+        function (done) {
+          var options = { keepAlive: true };
+          var client = this.client = new Client(domain + endpoint, options);
+          var nockRequest = nock(domain)
+            .get(endpoint)
+            .reply(200);
+          sinon.spy(request.Request.prototype, 'agent');
+          client
+            .get()
+            .then(function() {
+              expect(request.Request.prototype.agent.calledOnce).to.be.true;
+              expect(nockRequest.isDone()).to.be.true;
+              done();
+            });
+        },
     }
   }
 };

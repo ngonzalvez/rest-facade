@@ -1,6 +1,6 @@
 {
   "name": "rest-facade",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "description": "Simple abstraction for consuming REST API endpoints",
   "main": "src/index.js",
   "directories": {
@@ -40,10 +40,10 @@
   "dependencies": {
     "change-case": "^2.3.0",
     "deepmerge": "^3.2.0",
-    "lodash.get": "^4.4.2",
-    "superagent": "^5.1.1"
+    "lodash.get": "^4.4.2"
   },
   "peerDependencies": {
-    "superagent-proxy": "^2.0.0"
+    "superagent": "^5.1.1",
+    "superagent-proxy": "^3.0.0"
   }
 }
