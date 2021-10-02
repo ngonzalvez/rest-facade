@@ -34,8 +34,7 @@
     "mocha": "^2.3.3",
     "mocha-lcov-reporter": "^1.0.0",
     "nock": "^2.15.0",
-    "sinon": "^1.17.2",
-    "superagent-proxy": "^2.0.0"
+    "sinon": "^1.17.2"
   },
   "dependencies": {
     "change-case": "^2.3.0",
