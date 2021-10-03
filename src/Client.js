@@ -11,9 +11,6 @@ var defaultOptions = require('./defaultOptions');
 var resolveAPIErrorArg = require('./utils').resolveAPIErrorArg;
 var isFunction = require('./utils').isFunction;
 
-// Add proxy support to the request library.
-require('superagent-proxy')(request);
-
 const HttpsAgent = require('https').Agent;
 const keepAliveAgent = new HttpsAgent({
   keepAlive: true,
