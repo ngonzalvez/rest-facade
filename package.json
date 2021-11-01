@@ -44,5 +44,10 @@
   },
   "peerDependencies": {
     "superagent-proxy": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "superagent-proxy": {
+      "optional": true
+    }
   }
 }
