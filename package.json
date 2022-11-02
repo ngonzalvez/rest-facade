@@ -31,7 +31,7 @@
     "chai": "^3.4.0",
     "coveralls": "^2.13.3",
     "istanbul": "^0.4.5",
-    "mocha": "^2.3.3",
+    "mocha": "^10.1.0",
     "mocha-lcov-reporter": "^1.0.0",
     "nock": "^2.15.0",
     "sinon": "^1.17.2"
