@@ -33,7 +33,7 @@
     "istanbul": "^0.4.5",
     "mocha": "^10.2.0",
     "mocha-lcov-reporter": "^1.0.0",
-    "nock": "^2.15.0",
+    "nock": "^13.3.0",
     "sinon": "^1.17.2"
   },
   "dependencies": {
