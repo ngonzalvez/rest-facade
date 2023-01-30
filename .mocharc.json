@@ -1,0 +1,5 @@
+{
+  "ui": "exports",
+  "colors": true,
+  "reporter": "spec"
+}
