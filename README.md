@@ -1,16 +1,13 @@
-# rest-facade [![Build Status](https://travis-ci.org/ngonzalvez/rest-facade.svg?branch=master)](https://travis-ci.org/ngonzalvez/rest-facade)
+<h3 align="center">rest-facade</h3>
+<p align="center">Consume REST endpoints easier than ever</p>
+<h1></h1>
 
-Node.js module that abstracts the process of consuming a REST endpoint.
+#### Installation
+```sh
+npm install rest-facade
+```
 
-
-## Installation
-
-    npm install rest-facade
-
-
-## Usage
-
-### Create a new endpoint client
+#### Create a new endpoint client
 
 When creating a new client, a URL must be given as first arguments. If the URL have dynamic params, those variable params must be marked with the colon notation, as shown below.
 
@@ -33,7 +30,7 @@ var UserVideos = new rest.Client('http://domain.com/users/:userId/videos/:slug')
 ~~~
 
 
-### Get all instances from the API
+#### Get all instances from the API
 The `getAll()` method can take an optional object as first parameters specifying the URL params. Considering the UserVideos model from last example:
 
 ~~~js
@@ -47,7 +44,7 @@ UserVideos
 ~~~
 
 
-### Get one instance from the API.
+#### Get one instance from the API.
 ~~~js
 // Retrieve the user with ID 4.
 Users
@@ -58,7 +55,7 @@ Users
 ~~~
 
 
-### Create a new instance and save it to the API
+#### Create a new instance and save it to the API
 The create method can be called using several signatures.
 
 - `create(data)` returns a Promise.
@@ -81,7 +78,7 @@ UserVideos
 ~~~
 
 
-### Delete an instance from the API by ID
+#### Delete an instance from the API by ID
 As it was the case with the `create()` method, `delete()` can also be called with different signatures.
 
 - `delete(urlParams)` returns a Promise.
@@ -104,13 +101,13 @@ UserVideos
 ~~~
 
 
-### Update an instance.
+#### Update an instance.
 
 There are 2 ways to update data, if you are using correctly the HTTP methods, 1 is PUT and the other one is PATCH, rest-facade supports both of them:`Client.update` and `Client.patch`.
 
 As with the previous methods, an object with the URL parameters must be provided as first argument. The second argument must be an object with the new data.
 
-#### PUT request
+##### PUT request
 ~~~js
 Users
   .update({ id: userId }, data)
@@ -129,7 +126,7 @@ Users
   });
 ~~~
 
-#### PATCH request
+##### PATCH request
 
 ~~~js
 Users
@@ -141,7 +138,7 @@ Users
 
 Both functions work exactly the same, the only difference is the method used to perform the request.
 
-### Plain HTTP requests
+#### Plain HTTP requests
 In case you don't want to use the all the fancy abstractions (`create`, `update`, `delete`, `getAll`) you can also send plain HTTP requests using the HTTP method function.
 
 
@@ -163,7 +160,7 @@ Users.delete(qsParams[, data, cb]);
 ~~~
 
 
-### Callbacks
+#### Callbacks
 
 All methods support callbacks. However, if a callback function is given no promise will be returned. Callbacks must always be provided after all other function arguments. E.g.:
 
@@ -174,7 +171,7 @@ Users.getAll(function (err, users) {
 ~~~
 
 
-### Response headers
+#### Response headers
 
 ~~~js
 Users.getAll(function (err, body, headers) {
@@ -182,7 +179,7 @@ Users.getAll(function (err, body, headers) {
 });
 ~~~
 
-### Query String
+#### Query String
 
 All methods accept an object with URL params as first argument. The properties in this object will be used to format the URL as shown above. However, the properties defined in this object, but not in the endpoint URL, will be added as query string params.
 
@@ -210,7 +207,7 @@ var Users = rest.Client('http://domain.com/users/:id', { query: { convertCase: '
 Users.getAll({ page: 1, pageSize: 10 });  // Will resolve to http://domain.com/users?page=1&page_size=10
 ~~~
 
-#### Arrays
+##### Arrays
 By default, arrays in the querystring will be formmated this way: `?a=1&a=2&a=2`. However, you can change it to comma separated values `?a=1,2,3` by setting the `query.repeatParams` option to `false`.
 
 ~~~js
@@ -218,7 +215,7 @@ var client = new rest.Client(url, { query: { repeatParams: false }});
 ~~~
 
 
-### Body Case Conversion
+#### Body Case Conversion
 Rest-facade provides options for converting the body of the request/response. So, let's say you are consuming an API implemented in Python (using snake_case) and you want it converted to camelCase. You would specify the following options:
 
 ~~~js
@@ -247,7 +244,7 @@ client.create({ firstName: 'John', lastName: 'Doe' });
 
 The same way, all the responses from the server will converted to the specified case (camelCase in this example).
 
-### Per-Request Customization
+#### Per-Request Customization
 Sometimes you need to do some customization to each individual request that is sent to the consumed API,
 a likely candidate is for adding request-specific headers.
 
@@ -273,7 +270,7 @@ customizer(req, params, cb) {
 },
 ```
 
-### Proxy support
+#### Proxy support
 
 Rest-facade has `superagent-proxy` as [peer dependency](https://docs.npmjs.com/files/package.json#peerdependencies) to add proxy support. To use a proxy, you must first install the peer dependency.
 
@@ -290,7 +287,7 @@ var client = new rest.Client(url, {
 });
 ```
 
-### Persistent Connections (Keep-alive)
+#### Persistent Connections (Keep-alive)
 
 By default, persistent connection are not enabled. To enabled it, use the option:
 
@@ -300,7 +297,7 @@ var client = new rest.Client(url, {
 });
 ```
 
-### Specifying the type of the request body
+#### Specifying the type of the request body
 By default the request body type is 'json' but you can specify a custom type as follows:
 ```js
 var client = new rest.Client(url, {
