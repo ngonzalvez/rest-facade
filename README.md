@@ -9,24 +9,12 @@ npm install rest-facade
 
 #### Create a new endpoint client
 
-When creating a new client, a URL must be given as first arguments. If the URL have dynamic params, those variable params must be marked with the colon notation, as shown below.
+All you need to do is to instanciate `rest.Client` with the URL of the endpoint.
+~~~ts
+const REST = require('rest-facade');
 
-~~~js
-var rest = require('rest-facade');
-var options = {
-  headers: {
-    Authorization: 'Bearer token'
-  },
-  errorFormatter: {
-    name: 'error.title',
-    message: 'error.text',
-  }
-};
-
-var Users = new rest.Client('http://domain.com/users/:id', options);
-
-// The URL can have several dynamic params.
-var UserVideos = new rest.Client('http://domain.com/users/:userId/videos/:slug');
+const Users = new REST.Client('http://domain.com/users/:id', options);
+const UserVideos = new REST.Client('http://domain.com/users/:userId/videos/:slug');
 ~~~
 
 
@@ -34,24 +22,16 @@ var UserVideos = new rest.Client('http://domain.com/users/:userId/videos/:slug')
 The `getAll()` method can take an optional object as first parameters specifying the URL params. Considering the UserVideos model from last example:
 
 ~~~js
-// Retrieve all videos from the user with ID 4.
-// This will resolve to a "GET http://domain.com/users/4/videos" request.
-UserVideos
-  .getAll({ userId: 4 })
-  .then(function (videos) {
-    console.log(videos.length, 'videos retrieved');
-  });
+const videos = await UserVideos.getAll({ userId: 4 });
+
+console.log(videos.length, 'videos retrieved');
 ~~~
 
 
 #### Get one instance from the API.
+You can also fetch a single instance from the API using `get()`.
 ~~~js
-// Retrieve the user with ID 4.
-Users
-  .get({ id: 4 })
-  .then(function (user) {
-    console.log(user);
-  });
+const user = await Users.get({ id: 4});
 ~~~
 
 
@@ -64,17 +44,11 @@ The create method can be called using several signatures.
 - `create(urlParams, data, callback)` doesn't return a promise.
 
 ~~~js
-Users
-  .create({ firstName: 'John', lastName: 'Doe' });
-  .then(function (user) {
-    console.log('User created');
-  });
+// POST http://domain.com/users
+const user = await Users.create({ firstName: 'John', lastName: 'Doe' });
 
-UserVideos
-  .create({ userId: 4 }, { title: 'Learning Javascript', slug: 'learn-javascript' })
-  .then(function (video) {
-    console.log('User video created');
-  }):
+// POST http://domain.com/users/4/videos
+const video = await UserVideos.create({ userId: 4 }, { title: 'Learning Javascript', slug: 'learn-javascript' });
 ~~~
 
 
@@ -86,18 +60,11 @@ As it was the case with the `create()` method, `delete()` can also be called wit
 - `delete(urlParams, callback)` doesn't return a Promise.
 
 ~~~js
-Users
-  .delete({ id: userId })
-  .then(function () {
-    console.log('User deleted');
-  });
+// DELETE http://domain.com/users/4
+Users.delete({ id: 4 });
 
-// This will resolve to: DELETE http://domain.com/users/videos/learn-javascript
-UserVideos
-  .delete({ slug: 'learn-javascript' })
-  .then(function () {
-    // ...
-  });
+// DELETE http://domain.com/users/videos/learn-javascript
+UserVideos.delete({ slug: 'learn-javascript' });
 ~~~
 
 
@@ -109,31 +76,19 @@ As with the previous methods, an object with the URL parameters must be provided
 
 ##### PUT request
 ~~~js
-Users
-  .update({ id: userId }, data)
-  .then(function () {
-    console.log('User updated');
-  });
+Users.update({ id: userId }, data);
 ~~~
 
 or
 
 ~~~js
-Users
-  .put({ id: userId }, data)
-  .then(function () {
-    console.log('User updated');
-  });
+Users.put({ id: userId }, data);
 ~~~
 
 ##### PATCH request
 
 ~~~js
-Users
-  .patch({ id: userId }, data)
-  .then(function () {
-    console.log('User updated');
-  });
+Users.patch({ id: userId }, data);
 ~~~
 
 Both functions work exactly the same, the only difference is the method used to perform the request.
@@ -165,9 +120,7 @@ Users.delete(qsParams[, data, cb]);
 All methods support callbacks. However, if a callback function is given no promise will be returned. Callbacks must always be provided after all other function arguments. E.g.:
 
 ~~~js
-Users.getAll(function (err, users) {
-  console.log(users.length, 'users found');
-});
+const users = await Users.getAll();
 ~~~
 
 
